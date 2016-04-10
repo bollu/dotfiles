@@ -20,7 +20,9 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'tpope/vim-surround'
 Plug 'tweekmonster/braceless.vim'
 Plug 'xolox/vim-easytags'
+Plug 'xolox/vim-misc'
 Plug 'easymotion/vim-easymotion'
+Plug 'rking/ag.vim'
 
 "
 "Bling
@@ -45,6 +47,7 @@ Plug 'lambdatoast/elm.vim'
 Plug 'elmanuelito/vim-matlab-behave'
 Plug '4Evergreen4/vim-hardy'
 Plug 'bitc/vim-hdevtools'
+Plug 'jceb/vim-orgmode'
 
 call plug#end()
 
@@ -53,6 +56,7 @@ set nu
 autocmd BufEnter * silent! lcd %:p:h "set the working directory sanely
 inoremap jk <Esc>
 
+set autoreload
 set hlsearch
 set incsearch
 " size of a hard tabstop
@@ -72,6 +76,10 @@ set expandtab"
 
 "colored column at 80
 set colorcolumn=80
+
+" undo file that lets you re-undo after closing the file
+set undofile
+set undodir=~/.vim/undodir
 
 
 let mapleader=" "
@@ -107,14 +115,22 @@ map g# <Plug>(incsearch-nohl-g#)
 """"""""
 
 let g:airline_powerline_fonts=1
+
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 1
+"let g:airline#extensions#tabline#buffer_idx_mode = 1
 
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#tagbar#enabled = 1
 
+
+"let g:airline#extensions#tabline#buffer_nr_show = 1
+"allow buffers to be indexed
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+"have buffer names be unique
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 nmap <leader>1 <Plug>AirlineSelectTab1
 nmap <leader>2 <Plug>AirlineSelectTab2
 nmap <leader>3 <Plug>AirlineSelectTab3
@@ -126,8 +142,8 @@ nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
 "Expand Region
 """"""""""""""
-nnoremap <S-Up> <Plug>(expand_region_expand)
-nnoremap <S-Down> <Plug>(expand_region_shrink)
+nnoremap <leader><Up> <Plug>(expand_region_expand)
+nnoremap <leader><Down> <Plug>(expand_region_shrink)
 
 " Syntastic
 " """"""""
@@ -157,10 +173,12 @@ nnoremap <leader>b :CtrlPBuffer<CR>
 
 "Haskell
 """"""""
-
 autocmd FileType haskell setlocal shiftwidth=2 tabstop=2 expandtab
 
 "NERDTree
 """""""""
-
 nmap <Leader>o :NERDTreeToggle<CR>
+
+"Braceless
+""""""""""
+autocmd FileType haml,yaml,coffee,python BracelessEnable +indent +fold +highlight
