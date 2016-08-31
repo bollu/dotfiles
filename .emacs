@@ -79,7 +79,7 @@
       (package-install p))))
 
 ;;theme
-;;(load-theme 'gruvbox t)
+(load-theme 'wombat t)
 
 
 
@@ -112,7 +112,7 @@
 (add-hook 'coq-mode-hook #'company-coq-mode)
 
 ;;intero
-;;(add-hook 'haskell-mode-hook 'intero-mode)
+(add-hook 'haskell-mode-hook 'intero-mode)
 
 
 ;;tex
