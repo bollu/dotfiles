@@ -1,62 +1,36 @@
 call plug#begin('~/.vim/plugged')
 
-
 "Core
-Plug 'terryma/vim-expand-region'
-"Plug 'Valloric/YouCompleteMe'
-Plug 'kien/ctrlp.vim'
-Plug 'majutsushi/tagbar'
-Plug 'ervandew/supertab'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'Raimondi/delimitMate'
-Plug 'rking/ag.vim'
-Plug 'scrooloose/nerdtree'
+Plug 'vimwiki/vimwiki'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'scrooloose/syntastic'
-Plug 'mhinz/vim-sayonara'
-Plug 'maxbrunsfeld/vim-yankstack'
-Plug 'mhinz/vim-startify'
-Plug 'haya14busa/incsearch.vim'
-Plug 'tpope/vim-surround'
-Plug 'tweekmonster/braceless.vim'
-Plug 'xolox/vim-easytags'
-Plug 'xolox/vim-misc'
-Plug 'easymotion/vim-easymotion'
-Plug 'rking/ag.vim'
+Plug 'majutsushi/tagbar'
 
-"
 "Bling
 Plug 'bling/vim-airline'
-Plug 'flazz/vim-colorschemes'
 Plug 'morhetz/gruvbox'
-Plug 'jscappini/material.vim'
-Plug 'haya14busa/incsearch.vim'
-Plug 'tpope/vim-vinegar'
-Plug 'AlessandroYorba/Sierra'
-
-"Git
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
+Plug 'NLKNguyen/papercolor-theme'
 
 "Languages
-Plug 'tpope/vim-fireplace' 
 Plug 'rust-lang/rust.vim'
-Plug 'https://github.com/Harenome/vim-mipssyntax'
 Plug 'lervag/vimtex'
-Plug 'lambdatoast/elm.vim'
-Plug 'elmanuelito/vim-matlab-behave'
-Plug '4Evergreen4/vim-hardy'
-Plug 'bitc/vim-hdevtools'
 Plug 'jceb/vim-orgmode'
+Plug 'racer-rust/vim-racer'
+Plug 'Superbil/llvm.vim'
+Plug 'ludovicchabant/vim-gutentags'
 
 call plug#end()
 
-set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline:h16
+"make menu more usable
+set wildmenu
+set wildmode=longest:full,full
+
+
+set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline:h18
 set nu
 autocmd BufEnter * silent! lcd %:p:h "set the working directory sanely
 inoremap jk <Esc>
 
-set autoreload
 set hlsearch
 set incsearch
 " size of a hard tabstop
@@ -83,33 +57,30 @@ set undodir=~/.vim/undodir
 
 
 let mapleader=" "
+
+nnoremap Q <Nop>
 nnoremap q: :q<CR>
 nnoremap QQ :Sayonara<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>/ :nohlsearch<CR>
+nnoremap <leader>Q :nohlsearch<CR>
+nnoremap <leader> v
+nnoremap <leader><leader> V
+nnoremap <leader><leader><leader> <C-v>
 
-set background=dark
-colorscheme gruvbox
+set t_Co=256
+" set background=dark
+" colorscheme gruvbox
+set background=light
+colorscheme PaperColor
 
-"set background=light
-"colorscheme solarized
-" let g:sierra_Midnight = 1
-" colorscheme sierra
-" colorscheme wombat
+" run macros with Q
+nnoremap Q @q
 
 
-"Incsearch
-""""""""""
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)
+"Buffer bindings
+nnoremap <leader>b :ls<cr>:b<space>
+
 
 "Airline
 """"""""
@@ -140,22 +111,10 @@ nmap <leader>6 <Plug>AirlineSelectTab6
 nmap <leader>7 <Plug>AirlineSelectTab7
 nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
-"Expand Region
-""""""""""""""
-nnoremap <leader><Up> <Plug>(expand_region_expand)
-nnoremap <leader><Down> <Plug>(expand_region_shrink)
 
-" Syntastic
-" """"""""
-
-
-"Braceless
-"""""""""
-autocmd FileType python BracelessEnable +indent +highlight
 
 "Neovim Config
 """""""""""""
-
 if has('nvim')
     tnoremap <Esc> <C-\><C-n>
     tnoremap  <C-\><C-n>
@@ -166,9 +125,9 @@ endif
 let g:ctrlp_extensions = ['mixed']
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlPMixed'
-nnoremap <C-b> :CtrlPBuffer<CR>
 nnoremap <leader>p :CtrlP<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
+nnoremap <leader>t :CtrlPTag<CR>
 
 
 "Haskell
@@ -179,6 +138,23 @@ autocmd FileType haskell setlocal shiftwidth=2 tabstop=2 expandtab
 """""""""
 nmap <Leader>o :NERDTreeToggle<CR>
 
-"Braceless
-""""""""""
-autocmd FileType haml,yaml,coffee,python BracelessEnable +indent +fold +highlight
+"RustyTags
+"""""""""
+setlocal tags=./rusty-tags.vi;/
+autocmd BufWrite *.rs :silent exec "!rusty-tags vi --start-dir=" . expand('%:p:h') . "&"
+
+"Racer
+"""""
+
+set hidden
+let g:racer_cmd = "/Users/bollu/.cargo/bin/racer"
+
+"Disable arrow Keys
+"""""""""""""""""""
+
+" Disable Arrow keys in Escape mode
+" map <up> <nop>
+" map <down> <nop>
+" map <left> <nop>
+" map <right> <nop>
+

@@ -1,0 +1,43 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Nov 25 16:07:46 2016
+;; Desktop file format version 208
+;; Emacs version 25.1.50.1
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (22584 5242 844402 0) (desktop . "208") "bollu@Siddharths-MacBook-Pro-2.local" nil nil ((((minibuffer . t) (font-backend mac-ct) (fontsize . 0) (font . "-*-Hack-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1") (border-width . 0) (internal-border-width . 2) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "#F8F8F2") (background-color . "#272822") (line-spacing) (left-fringe . 8) (right-fringe . 8) (menu-bar-lines . 1) (tool-bar-lines . 0) (title) (icon-type) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 15) (scroll-bar-height . 0) (alpha) (fullscreen) (display-type . color) (background-mode . dark) (cursor-color . "#F8F8F2") (environment) (mouse-color . "#F8F8F2") (frameset--id . "AFC9-BA63-2900-B231") (frameset--mini t . t) (height . 50) (width . 164) (modeline . t) (unsplittable) (left . 4) (top . 23) (right-divider-width . 0) (bottom-divider-width . 0) (icon-name) (visibility . t) (display . "Siddharths-MacBook-Pro-2.local") (explicit-name) (tool-bar-position . top)) ((min-height . 4) (min-width . 10) (min-height-ignore . 3) (min-width-ignore . 6) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 80) (min-pixel-width . 100) (min-pixel-height-ignore . 60) (min-pixel-width-ignore . 60) (min-pixel-height-safe . 20) (min-pixel-width-safe . 20)) leaf (pixel-width . 1671) (pixel-height . 980) (total-width . 167) (total-height . 49) (normal-height . 1.0) (normal-width . 1.0) (buffer ".emacs" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 4019) (start . 3106))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring '("c-mode"))
+(setq register-alist nil)
+(setq file-name-history '("" "/Users/bollu/.emacs" "/Users/bollu/work/symengine/symengine-hs/src/Symengine.hs"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 208
+  "/Users/bollu/dotfiles/.emacs"
+  ".emacs"
+  'emacs-lisp-mode
+  '(indent-guide-mode smartparens-mode)
+  4019
+  '(3702 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix))
+  '((mark-ring (1))))
+
+(desktop-create-buffer 208
+  "/Users/bollu/work/symengine/symengine-hs/src/Symengine.hs"
+  "Symengine.hs"
+  'haskell-mode
+  '(indent-guide-mode smartparens-mode)
+  226
+  '(nil nil)
+  nil
+  nil
+  '((tab-width . 8) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix))
+  '((mark-ring nil)))
+
