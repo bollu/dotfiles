@@ -1,10 +1,9 @@
 call plug#begin('~/.vim/plugged')
 
 "Core
-Plug 'vimwiki/vimwiki'
 Plug 'ctrlpvim/ctrlp.vim'
-Plug 'scrooloose/syntastic'
-Plug 'majutsushi/tagbar'
+Plug 'justinmk/vim-dirvish'
+
 
 "Bling
 Plug 'bling/vim-airline'
@@ -12,19 +11,32 @@ Plug 'morhetz/gruvbox'
 Plug 'NLKNguyen/papercolor-theme'
 
 "Languages
-Plug 'rust-lang/rust.vim'
-Plug 'lervag/vimtex'
-Plug 'jceb/vim-orgmode'
-Plug 'racer-rust/vim-racer'
-Plug 'Superbil/llvm.vim'
+Plug 'mhinz/vim-sayonara'
+Plug 'xolox/vim-easytags'
+Plug 'xolox/vim-misc'
+Plug 'sheerun/vim-polyglot'
+
+
+Plug 'Valloric/YouCompleteMe'
 Plug 'ludovicchabant/vim-gutentags'
 
 call plug#end()
+
+set backspace=indent,eol,start
+
+"clipboard
+set clipboard=unnamed
 
 "make menu more usable
 set wildmenu
 set wildmode=longest:full,full
 
+"ignore case
+set ignorecase
+set smartcase
+
+"automatically reload files
+set autoread
 
 set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline:h18
 set nu
@@ -55,6 +67,7 @@ set colorcolumn=80
 set undofile
 set undodir=~/.vim/undodir
 
+set autoindent
 
 let mapleader=" "
 
@@ -69,10 +82,10 @@ nnoremap <leader><leader> V
 nnoremap <leader><leader><leader> <C-v>
 
 set t_Co=256
-" set background=dark
-" colorscheme gruvbox
-set background=light
-colorscheme PaperColor
+set background=dark
+colorscheme gruvbox
+" set background=light
+" colorscheme PaperColor
 
 " run macros with Q
 nnoremap Q @q
@@ -124,10 +137,11 @@ endif
 """"""
 let g:ctrlp_extensions = ['mixed']
 let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_cmd = 'CtrlP'
 nnoremap <leader>p :CtrlP<CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
 nnoremap <leader>t :CtrlPTag<CR>
+nnoremap <leader>f :CtrlPMRU<CR>
 
 
 "Haskell
@@ -149,12 +163,27 @@ autocmd BufWrite *.rs :silent exec "!rusty-tags vi --start-dir=" . expand('%:p:h
 set hidden
 let g:racer_cmd = "/Users/bollu/.cargo/bin/racer"
 
+"Easytags
+""""""""
+
+let g:easytags_async = 1
+
+"YouCompleteMe
+""""""""""""""
+let g:ycm_global_ycm_extra_conf='/Users/bollu/dotfiles/.ycm_extra_conf.py'
+
 "Disable arrow Keys
 """""""""""""""""""
 
 " Disable Arrow keys in Escape mode
-" map <up> <nop>
-" map <down> <nop>
-" map <left> <nop>
-" map <right> <nop>
+"nmap <up> <nop>
+"nmap <down> <nop>
+"nmap <left> <nop>
+"nmap <right> <nop>
 
+
+"imap <up> <nop>
+"imap <down> <nop>
+"imap <left> <nop>
+"imap <right> <nop>
+"set autochdir
