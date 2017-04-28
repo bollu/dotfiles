@@ -1,54 +1,38 @@
-(setq url-proxy-services
-      '(("http" .  "http://proxy.iiit.ac.in:8080")
-        ("https" .  "http://proxy.iiit.ac.in:8080")))
+;;(setq url-proxy-services
+;;      '(("http" .  "http://proxy.iiit.ac.in:8080")
+;;        ("https" .  "http://proxy.iiit.ac.in:8080")))
 
-(setq url-proxy-services
-   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
-     ("http" . "proxy.iiit.ac.in:8080")
-     ("https" . "proxy.iiit.ac.in:8080")))
-
+;;(setq url-proxy-services
+;;   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
+;;     ("http" . "proxy.iiit.ac.in:8080")
+;;     ("https" . "proxy.iiit.ac.in:8080")))
 
 (require 'package)
-(require 'cl)
-
-(add-to-list 'package-archives '("melpa-stable" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+;; don't need to refresh and annoy the world each time you launch.
+;;(package-refresh-contents)
 (package-initialize)
 
 
+(require 'cl)
 
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq indent-line-function 'insert-tab)
-(defun my-c++-mode-hook ()
-  (setq c-basic-offset 4)
-  (c-set-offset 'substatement-open 0))
-(add-hook 'c++-mode-hook 'my-c++-mode-hook)
+;;allow GC to use memory
+(setq gc-cons-threshold 20000000)
 
 
+;; spell check
+(if (eq system-type 'darwin)
+    (setq-default ispell-program-name "/usr/local/bin/aspell")
+  (setq-default ispell-program-name "/usr/bin/aspell"))
+(setq-default ispell-list-command "list")
 
 
-(defvar required-packages
-  '(
-    ivy
-    projectile
-    smartparens
-    counsel
-    company
-    company-coq
-    company-c-headers
-    indent-guide
-    ag
-    intero
-    irony
-   ;;colorschemes
-    monokai-theme
-    gruvbox-theme
-    robe
-    markdown-mode 
-    ) "a list of packages to ensure are installed at launch.")
+;;parens niceness
+(electric-pair-mode 1)
+(show-paren-mode t)
 
-;;proof gegenral
-(load "~/.emacs.d/lisp/PG/generic/proof-site")
 
 ;;hide cruft
 (tool-bar-mode -1)
@@ -68,130 +52,141 @@
 ;;indentation
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
-
 ;;font
 (add-to-list 'default-frame-alist '(font . "Hack-17"))
 
+;; line  by line scrolling
+(setq scroll-step 1)
+;; spaces for tab
+(setq-default indent-tabs-mode nil) 
 
-;; method to check if all packages are installed
-;;(async-bytecomp-package-mode 1)
+;; ========== Enable Line and Column Numbering ==========
 
-(defun packages-installed-p ()
-  (loop for p in required-packages
-        when (not (package-installed-p p)) do (return nil)
-        finally (return t)))
+;; Show line-number in the mode line
+(line-number-mode 1)
 
-;; if not all packages are installed, check one by one and install the missing ones.
-(unless (packages-installed-p)
-  ; check for new packages (package versions)
-  (message "%s" "Emacs is now refreshing its package database...")
-  (package-refresh-contents)
-  (message "%s" " done.")
-  ; install the missing packages
-  (dolist (p required-packages)
-    (when (not (package-installed-p p))
-      (package-install p))))
+;; Show column-number in the mode line
+(column-number-mode 1)
 
-;;themehe
-(load-theme 'monokai t)
+
+;;SMEX over M-x
+(setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
 
 
-;;indent-guide
-(require 'indent-guide)
-(indent-guide-global-mode)
+;;IDO > usual mode
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
+;;vertical display
+(require 'ido-vertical-mode)
+(ido-mode 1)
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(setq ido-vertical-show-count t)
+(setq ido-use-faces t)
+(set-face-attribute 'ido-vertical-first-match-face nil
+                    :background nil
+                    :foreground "orange")
 
-;;smartparens
-(require 'smartparens-config)
-(smartparens-global-mode)
-
-;;Ivy
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-fuzzy)))
-(setq ivy-initial-inputs-alist nil)
+(setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
 
 
-(global-set-key (kbd "C-s") 'swiper)
-(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-(global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
-
-(global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "<f1> f") 'counsel-describe-function)
-(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-(global-set-key (kbd "<f1> l") 'counsel-load-library)
-(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-(global-set-key (kbd "C-c C-r") 'ivy-resume)
-(global-set-key (kbd "C-x p") 'projectile-find-file)
+;;disallow org from reformatting source blocks
+(setq org-src-preserve-indentation t)
 
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y or n is enough
 (defalias 'list-buffers 'ibuffer) ; always use ibuffer
 
-
-(defun markdown-latex-symbols () (set-input-method 'TeX))
-
-(setq ivy-use-virtual-buffers t)
-
-;;robe
-(add-hook 'ruby-mode-hook 'robe-mode)
-
-
-;;projectile
-(setq projectile-completion-system 'ivy)
-
-;;company
-(add-hook 'after-init-hook 'global-company-mode)
-(add-hook 'coq-mode-hook #'company-coq-mode)
-
-;; === from http://tuhdo.github.io/c-ide.html#sec-2 ===
-(setq company-default-lighter " com")
-
-(eval-after-load 'company
-  '(progn
-    (setq
-     ;; never start auto-completion unless I ask for it
-     company-idle-delay nil
-     ;; autocomplete right after '.'
-     company-minimum-prefix-length 0
-     ;; remove echo delay
-     company-echo-delay 0
-     ;; don't complete in certain modes
-     company-global-modes '(not git-commit-mode)))
-  )
-
-
-(show-smartparens-global-mode)
-
-
-
-;;Intero
-(add-hook 'haskell-mode-hook 'intero-mode)
-
-
 ;;org-mode
 (global-set-key (kbd "C-c a") 'org-agenda)
-;;automatically launch agenda
-(org-agenda nil "a")
 
-;;tex
-;;(setq TeX-auto-save t)
-;;(setq TeX-parse-self t)
-;;(setq TeX-save-query nil)
-;;(setq TeX-PDF-mode t)
+;;llvm-mode
+(setq load-path (cons (expand-file-name "/Users/bollu/work/LLVM-all/polly/llvm/utils/emacs") load-path))
+(require 'llvm-mode)
+
+;; evil
+(require 'evil)
+(evil-mode 1)
+;;jk for evil with key-chord
+;;Exit insert mode by pressing j and then j quickly
+(setq key-chord-two-keys-delay 0.3)
+(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+(key-chord-mode 1)
+
+;; company - autocomplete
+(require 'company)
+(add-hook 'c++-mode-hook 'company-mode)
+(add-hook 'c-mode-hook 'company-mode)
+(setq company-idle-delay 0.0)
+(global-set-key (kbd "C-/") 'company-complete)
+(evil-declare-change-repeat 'company-complete)
+(evil-declare-change-repeat 'company-complete-common)
+
+;;gitconfig
+(add-to-list 'auto-mode-alist '("\\.gitconfig$" . conf-mode))
+
+;;C/C++ (1/4 of my life)
+(require 'irony)
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+
+
+;; Rust (1/4 of my life)
+(require 'racer)
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+
+(add-hook 'racer-mode-hook #'company-mode)
+(require 'rust-mode)
+(define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+(setq company-tooltip-align-annotations t)
+
+
+;;markdown
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (visual-line-mode t)
+            (writegood-mode t)))
+
+(setq markdown-command "pandoc --smart -f markdown -t html")
+
+;;projectile
+(projectile-mode)
+
+(load "~/.emacs.d/lisp/PG/generic/proof-site")
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/get-things-done.org")))
+ '(coq-prog-name "/usr/local/bin/coqtop")
+ '(custom-safe-themes
+   (quote
+    ("10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(package-selected-packages
    (quote
-    (markdown-mode+ markdown-mode robe smartparens projectile monokai-theme intero indent-guide helm gruvbox-theme counsel company-coq ag 0blayout))))
+    (company-irony intero haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; colorscheme
+(load-theme 'gruvbox)
