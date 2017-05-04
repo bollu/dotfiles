@@ -12,7 +12,7 @@
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 ;; don't need to refresh and annoy the world each time you launch.
-;;(package-refresh-contents)
+;; (package-refresh-contents)
 (package-initialize)
 
 
@@ -20,7 +20,6 @@
 
 ;;allow GC to use memory
 (setq gc-cons-threshold 20000000)
-
 
 ;; spell check
 (if (eq system-type 'darwin)
@@ -35,7 +34,7 @@
 
 
 ;;hide cruft
-(tool-bar-mode -1)
+;; (tool-bar-mode -1)
 (setq inhibit-startup-screen t)
 
 ;;save files
@@ -116,6 +115,11 @@
 ;; evil
 (require 'evil)
 (evil-mode 1)
+
+;; powerline
+(require 'powerline)
+(powerline-default-theme)
+
 ;;jk for evil with key-chord
 ;;Exit insert mode by pressing j and then j quickly
 (setq key-chord-two-keys-delay 0.3)
@@ -134,11 +138,12 @@
 ;;gitconfig
 (add-to-list 'auto-mode-alist '("\\.gitconfig$" . conf-mode))
 
+;; DISABLE IRONY TILL WE CAN BUILD IT
 ;;C/C++ (1/4 of my life)
-(require 'irony)
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+;; (require 'irony)
+;; (add-hook 'c++-mode-hook 'irony-mode)
+;; (add-hook 'c-mode-hook 'irony-mode)
+;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 
 
@@ -163,10 +168,31 @@
 
 (setq markdown-command "pandoc --smart -f markdown -t html")
 
+;; ivy, swiper
+(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+
+
 ;;projectile
 (projectile-mode)
+;; counsel for projectile
+(counsel-projectile-on)
 
-(load "~/.emacs.d/lisp/PG/generic/proof-site")
+;; sublime text like bindings
+(require 'multiple-cursors)
+(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+(global-set-key (kbd "C-c @") 'swiper)
+
+
+
+;;proof general
+;;(load "~/.emacs.d/lisp/PG/generic/proof-site")
 
 
 (custom-set-variables
@@ -175,12 +201,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(coq-prog-name "/usr/local/bin/coqtop")
- '(custom-safe-themes
-   (quote
-    ("10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
- '(package-selected-packages
-   (quote
-    (company-irony intero haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
+ '(custom-safe-themes (quote ("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+ '(ivy-height 40)
+ '(package-selected-packages (quote (company-irony intero haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -189,4 +212,5 @@
  )
 
 ;; colorscheme
-(load-theme 'gruvbox)
+(require 'monokai-theme)
+(load-theme 'monokai)
