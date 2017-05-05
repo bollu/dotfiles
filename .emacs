@@ -179,14 +179,6 @@
 (counsel-projectile-on)
 
 ;; sublime text like bindings
-(require 'multiple-cursors)
-(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
 (global-set-key (kbd "C-c @") 'swiper)
 
 
@@ -212,5 +204,5 @@
  )
 
 ;; colorscheme
-(require 'monokai-theme)
-(load-theme 'monokai)
+(require 'leuven-theme)
+(load-theme 'leuven)
