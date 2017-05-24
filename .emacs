@@ -15,7 +15,6 @@
 ;; (package-refresh-contents)
 (package-initialize)
 
-
 (require 'cl)
 
 ;;allow GC to use memory
@@ -68,34 +67,48 @@
 (column-number-mode 1)
 
 
-;;SMEX over M-x
-(setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;;SMEXV over M-x
+;; (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
+;; (smex-initialize)
+;; (global-set-key (kbd "M-x") 'smex)
+;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+
+
+(defun install-all-packages ()
+  "install / update all packages I care about"
+  (interactive)
+  (package-initialize)
+  (package-refresh-contents)
+  (let ((ps '(llvm-mode ivy evil key-chord
+              powerline company racer projectile
+              counsel-projectile leuven-theme)))
+    (dolist (p ps)
+      (when (not (package-installed-p p))
+        (package-install p))))
+)
 
 
 
 ;;IDO > usual mode
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
+;; (require 'flx-ido)
+;;( ido-mode 1)
+;; (ido-everywhere 1)
+;; (flx-ido-mode 1)
 ;; disable ido faces to see flx highlights.
-(setq ido-enable-flex-matching t)
-(setq ido-use-faces nil)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-use-faces nil)
 ;;vertical display
-(require 'ido-vertical-mode)
-(ido-mode 1)
-(ido-vertical-mode 1)
-(setq ido-vertical-define-keys 'C-n-and-C-p-only)
-(setq ido-vertical-show-count t)
-(setq ido-use-faces t)
-(set-face-attribute 'ido-vertical-first-match-face nil
-                    :background nil
-                    :foreground "orange")
+;;(require 'ido-vertical-mode)
+;;(ido-mode 1)
+;;(ido-vertical-mode 1)
+;;(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+;;(setq ido-vertical-show-count t)
+;;(setq ido-use-faces t)
+;;(set-face-attribute 'ido-vertical-first-match-face nil
+;;                    :background nil
+;;                    :foreground "orange")
 
-(setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
+;;(setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
 
 
 ;;disallow org from reformatting source blocks
@@ -193,7 +206,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(coq-prog-name "/usr/local/bin/coqtop")
- '(custom-safe-themes (quote ("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+ '(custom-safe-themes (quote ("d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+ '(delete-selection-mode nil)
  '(ivy-height 40)
  '(package-selected-packages (quote (company-irony intero haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
 (custom-set-faces
