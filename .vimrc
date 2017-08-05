@@ -12,13 +12,16 @@ Plug 'NLKNguyen/papercolor-theme'
 
 "Languages
 Plug 'mhinz/vim-sayonara'
-Plug 'xolox/vim-easytags'
+"Plug 'xolox/vim-easytags'
 Plug 'xolox/vim-misc'
 Plug 'sheerun/vim-polyglot'
 
 
-Plug 'Valloric/YouCompleteMe'
+"Plug 'Valloric/YouCompleteMe'
 Plug 'ludovicchabant/vim-gutentags'
+
+Plug 'mhinz/vim-startify'
+Plug 'Rip-Rip/clang_complete'
 
 call plug#end()
 
@@ -82,10 +85,10 @@ nnoremap <leader><leader> V
 nnoremap <leader><leader><leader> <C-v>
 
 set t_Co=256
-set background=dark
-colorscheme gruvbox
-" set background=light
-" colorscheme PaperColor
+"set background=dark
+"colorscheme gruvbox
+set background=light
+colorscheme PaperColor
 
 " run macros with Q
 nnoremap Q @q
@@ -152,10 +155,6 @@ autocmd FileType haskell setlocal shiftwidth=2 tabstop=2 expandtab
 """""""""
 nmap <Leader>o :NERDTreeToggle<CR>
 
-"RustyTags
-"""""""""
-setlocal tags=./rusty-tags.vi;/
-autocmd BufWrite *.rs :silent exec "!rusty-tags vi --start-dir=" . expand('%:p:h') . "&"
 
 "Racer
 """""
@@ -171,19 +170,48 @@ let g:easytags_async = 1
 "YouCompleteMe
 """"""""""""""
 let g:ycm_global_ycm_extra_conf='/Users/bollu/dotfiles/.ycm_extra_conf.py'
+let g:ycm_confirm_extra_conf=0
 
 "Disable arrow Keys
 """""""""""""""""""
 
 " Disable Arrow keys in Escape mode
-"nmap <up> <nop>
-"nmap <down> <nop>
-"nmap <left> <nop>
-"nmap <right> <nop>
+nmap <up> <nop>
+nmap <down> <nop>
+nmap <left> <nop>
+nmap <right> <nop>
 
 
-"imap <up> <nop>
-"imap <down> <nop>
-"imap <left> <nop>
-"imap <right> <nop>
+imap <up> <nop>
+imap <down> <nop>
+imap <left> <nop>
+imap <right> <nop>
 "set autochdir
+"
+"Common folder Aliases
+"""""""""""""""""""""""
+command Cdpolly cd ~/work/LLVM-all/polly/llvm/tools/polly
+command Cdballoon cd ~/work/balloon-lang
+command Cdsimplexhc cd ~/work/simplexhc
+command Cdghc ~/work/ghc-all
+
+
+"Move between splits
+""""""""""""""""""""
+
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+set splitbelow
+set splitright
+
+"Spell check
+""""""""""""
+set spell spelllang=en_us
+"for .gitignore
+autocmd FileType gitcommit setlocal spell
+
+"Clang complete
+""""""""""""""
+let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'

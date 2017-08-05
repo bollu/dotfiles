@@ -1,3 +1,6 @@
+(load "server")
+(unless (server-running-p) (server-start))
+
 ;;(setq url-proxy-services
 ;;      '(("http" .  "http://proxy.iiit.ac.in:8080")
 ;;        ("https" .  "http://proxy.iiit.ac.in:8080")))
@@ -16,7 +19,6 @@
 (package-initialize)
 
 
-(require 'cl)
 
 ;;allow GC to use memory
 (setq gc-cons-threshold 20000000)
@@ -43,6 +45,8 @@
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
+(setq backup-by-copying t)
+
 
 ;;disable tabs
 (setq-default indent-tabs-mode nil)
@@ -140,10 +144,10 @@
 
 ;; DISABLE IRONY TILL WE CAN BUILD IT
 ;;C/C++ (1/4 of my life)
-;; (require 'irony)
-;; (add-hook 'c++-mode-hook 'irony-mode)
-;; (add-hook 'c-mode-hook 'irony-mode)
-;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(require 'irony)
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 
 
@@ -175,6 +179,7 @@
 
 ;;projectile
 (projectile-mode)
+(setq projectile-enable-caching t)
 ;; counsel for projectile
 (counsel-projectile-on)
 
@@ -186,6 +191,18 @@
 ;;proof general
 ;;(load "~/.emacs.d/lisp/PG/generic/proof-site")
 
+;;flyspell
+(require 'flyspell)
+(flyspell-mode +1)
+;; spell checking in comments
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+;; make sure spell checking works
+(setq-default ispell-program-name "aspell")
+(ispell-change-dictionary "en_GB" t)
+
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -193,9 +210,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(coq-prog-name "/usr/local/bin/coqtop")
- '(custom-safe-themes (quote ("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+ '(custom-safe-themes
+   (quote
+    ("d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "ad9747dc51ca23d1c1382fa9bd5d76e958a5bfe179784989a6a666fe801aadf2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(ivy-height 40)
- '(package-selected-packages (quote (company-irony intero haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
+ '(package-selected-packages
+   (quote
+    (intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -206,3 +227,4 @@
 ;; colorscheme
 (require 'leuven-theme)
 (load-theme 'leuven)
+
