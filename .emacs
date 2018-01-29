@@ -1,5 +1,5 @@
-(load "server")
-(unless (server-running-p) (server-start))
+:q!; (load "server")
+;; (unless (server-running-p) (server-start))
 
 ;;(setq url-proxy-services
 ;;      '(("http" .  "http://proxy.iiit.ac.in:8080")
@@ -13,7 +13,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 ;; don't need to refresh and annoy the world each time you launch.
 ;; (package-refresh-contents)
 (package-initialize)
@@ -84,9 +83,13 @@
   (interactive)
   (package-initialize)
   (package-refresh-contents)
-  (let ((ps '(llvm-mode ivy evil key-chord
-              powerline company racer projectile
-              counsel-projectile leuven-theme)))
+  (let ((ps '(ivy
+              evil
+              key-chord
+              powerline
+              company
+              projectile
+              leuven-theme)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -126,11 +129,11 @@
 ;;org-mode
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-;;llvm-mode
-(setq load-path (cons (expand-file-name "/Users/bollu/work/LLVM-all/polly/llvm/utils/emacs") load-path))
-(require 'llvm-mode)
-
 ;; evil
+;; Disable weird evil shit for proof general
+;; https://github.com/syl20bnr/spacemacs/issues/8853
+(setq evil-want-abbrev-expand-on-insert-exit nil)
+(setq evil-want-C-u-scroll t)
 (require 'evil)
 (evil-mode 1)
 
@@ -156,35 +159,16 @@
 ;;gitconfig
 (add-to-list 'auto-mode-alist '("\\.gitconfig$" . conf-mode))
 
-;; DISABLE IRONY TILL WE CAN BUILD IT
-;;C/C++ (1/4 of my life)
-(require 'irony)
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-
-
-
-;; Rust (1/4 of my life)
-(require 'racer)
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
-
-(add-hook 'racer-mode-hook #'company-mode)
-(require 'rust-mode)
-(define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-(setq company-tooltip-align-annotations t)
-
 
 ;;markdown
-(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (visual-line-mode t)
-            (writegood-mode t)))
-
-(setq markdown-command "pandoc --smart -f markdown -t html")
+;; (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+;; (add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
+;; (add-hook 'markdown-mode-hook
+;;           (lambda ()
+;;             (visual-line-mode t)
+;;             (writegood-mode t)))
+;; 
+;; (setq markdown-command "pandoc --smart -f markdown -t html")
 
 ;; ivy, swiper
 (global-set-key (kbd "C-s") 'swiper)
@@ -194,8 +178,6 @@
 ;;projectile
 (projectile-mode)
 (setq projectile-enable-caching t)
-;; counsel for projectile
-(counsel-projectile-on)
 
 ;; sublime text like bindings
 (global-set-key (kbd "C-c @") 'swiper)
@@ -206,14 +188,14 @@
 ;;(load "~/.emacs.d/lisp/PG/generic/proof-site")
 
 ;;flyspell
-(require 'flyspell)
-(flyspell-mode +1)
-;; spell checking in comments
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-;; make sure spell checking works
-(setq-default ispell-program-name "aspell")
-(ispell-change-dictionary "en_GB" t)
+;; (require 'flyspell)
+;; (flyspell-mode +1)
+;; ;; spell checking in comments
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; 
+;; ;; make sure spell checking works
+;; (setq-default ispell-program-name "aspell")
+;; (ispell-change-dictionary "en_GB" t)
 
 
 
