@@ -86,7 +86,7 @@
   (package-refresh-contents)
   (let ((ps '(llvm-mode ivy evil key-chord
               powerline company racer projectile
-              counsel-projectile leuven-theme tuareg)))
+              counsel-projectile leuven-theme tuareg company-coq)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -299,6 +299,7 @@
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
 
+;; ===============
 ;; MERLIN (for OCAML)
 (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
  (when (and opam-share (file-directory-p opam-share))
@@ -309,6 +310,7 @@
 
 
 
+;; ===============
 ;; MERLIN + COMPANY
 ; Make company aware of merlin
 (with-eval-after-load 'company
@@ -317,3 +319,8 @@
 (add-hook 'merlin-mode-hook 'company-mode)
 ; Or enable it globally:
 ; (add-hook 'after-init-hook 'global-company-mode)
+
+
+;; ===============
+;; Load company-coq when opening Coq files
+(add-hook 'coq-mode-hook #'company-coq-mode)
