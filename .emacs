@@ -1,14 +1,14 @@
 (load "server")
 (unless (server-running-p) (server-start))
 
-(setq url-proxy-services
-      '(("http" .  "http://proxy.iiit.ac.in:8080")
-        ("https" .  "http://proxy.iiit.ac.in:8080")))
-
-(setq url-proxy-services
-   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
-     ("http" . "proxy.iiit.ac.in:8080")
-     ("https" . "proxy.iiit.ac.in:8080")))
+;;(setq url-proxy-services
+;;      '(("http" .  "http://proxy.iiit.ac.in:8080")
+;;        ("https" .  "http://proxy.iiit.ac.in:8080")))
+;;
+;;(setq url-proxy-services
+;;   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
+;;     ("http" . "proxy.iiit.ac.in:8080")
+;;     ("https" . "proxy.iiit.ac.in:8080")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -19,6 +19,9 @@
 (package-initialize)
 
 (require 'cl)
+;; hide menubar and toolbar
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 
 ;;allow GC to use memory
 (setq gc-cons-threshold 20000000)
@@ -40,12 +43,21 @@
 (setq inhibit-startup-screen t)
 
 ;;save files
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "/tmp/"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
+
 ;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-(setq backup-by-copying t)
+;; (setq backup-directory-alist
+;;       `((".*" . ,temporary-file-directory)))
+;; (setq auto-save-file-name-transforms
+;;       `((".*" ,temporary-file-directory t)))
+;; (setq backup-by-copying t)
 
 
 ;;disable tabs
@@ -55,8 +67,22 @@
 ;;indentation
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
+;; Buffer stuff
+;; IBuffer > Buffer
+;; (define-key global-map (kbd "C-x b") 'ibuffer)
+(require 'ido)
+(ido-mode t)
+;; (define-key global-map (kbd "C-x b") 'ido-bu)
+
+(define-key global-map (kbd "C-x n") 'next-buffer)
+(define-key global-map (kbd "C-x C-n") 'next-buffer)
+(define-key global-map (kbd "M-n") 'next-buffer)
+
+(define-key global-map (kbd "M-p") 'previous-buffer)
+(define-key global-map (kbd "C-x p") 'previous-buffer)
+
 ;;font
-(add-to-list 'default-frame-alist '(font . "Hack-11"))
+(add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline-13"))
 
 ;; line  by line scrolling
 (setq scroll-step 1)
@@ -140,8 +166,8 @@
 
 
 ;; powerline
-(require 'powerline)
-(powerline-default-theme)
+;; (require 'powerline)
+;; (powerline-default-theme)
 
 ;;jk for evil with key-chord
 ;;Exit insert mode by pressing j and then j quickly
@@ -153,6 +179,7 @@
 (require 'company)
 (add-hook 'c++-mode-hook 'company-mode)
 (add-hook 'c-mode-hook 'company-mode)
+(add-hook 'c-mode-hook 'counsel-projectile-mode)
 (setq company-idle-delay 0.0)
 (global-set-key (kbd "C-/") 'company-complete)
 (global-set-key (kbd "C-\\") 'company-complete)
@@ -176,7 +203,7 @@
         company-echo-metadata-frontend))
 
 ;; space key finishes completion
-(setq company-auto-complete t)
+;; (setq company-auto-complete t)
 
 ;;gitconfig
 (add-to-list 'auto-mode-alist '("\\.gitconfig$" . conf-mode))
@@ -212,21 +239,31 @@
 (setq markdown-command "pandoc --smart -f markdown -t html")
 
 ;; ivy, swiper
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
 (global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-x C-p") 'counsel-projectile-switch-to-buffer)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+
 
 
 ;;projectile
 (projectile-mode)
 (setq projectile-enable-caching t)
 ;; counsel for projectile
-;; (Counsel-projectile-on)
+(counsel-projectile-mode)
+  
 
 ;; sublime text like bindings
 (global-set-key (kbd "C-c @") 'swiper)
+(global-set-key (kbd "C-]") 'counsel-ag)
 
 ;;proof general
 (load "~/.emacs.d/lisp/PG/generic/proof-site")
+(coq-prefer-top-of-conclusion t)
 
 ;;flyspell
 (require 'flyspell)
@@ -239,6 +276,46 @@
 (ispell-change-dictionary "en_GB" t)
 
 
+;;tabbar (pimped from here:  http://amitp.blogspot.com/2007/04/emacs-buffer-tabs.html)
+(defvar my/tabbar-left "/" "Separator on left side of tab")
+(defvar my/tabbar-right "\\" "Separator on right side of tab")
+(defun my/tabbar-tab-label-function (tab)
+  (powerline-render (list my/tabbar-left
+                          (format " %s  " (car tab))
+                          my/tabbar-right)))
+(with-eval-after-load 'powerline
+  (setq my/tabbar-left (powerline-wave-right 'tabbar-default nil 24))
+  (setq my/tabbar-right (powerline-wave-left nil 'tabbar-default 24))
+  (setq tabbar-tab-label-function #'my/tabbar-tab-label-function))
+;; Note: for tabbar 2.0 use 
+;; tabbar-default not tabbar-default-face,
+;; tabbar-selected not tabbar-selected-face,
+;; tabbar-button not tabbar-button-face,
+;; tabbar-separator not tabbar-separator-face
+(set-face-attribute
+ 'tabbar-default nil
+ :background "gray60")
+(set-face-attribute
+ 'tabbar-unselected nil
+ :background "gray85"
+ :foreground "gray30"
+ :box nil)
+(set-face-attribute
+ 'tabbar-selected nil
+ :background "#f2f2f6"
+ :foreground "black"
+ :box nil)
+(set-face-attribute
+ 'tabbar-button nil
+ :box '(:line-width 1 :color "gray72" :style released-button))
+(set-face-attribute
+ 'tabbar-separator-face nil
+ :height 0.7)
+
+
+;;enable tabbar
+(tabbar-mode 1)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -248,15 +325,18 @@
  '(coq-prog-name "/home/bollu/.opam/4.05.0/bin/coqtop")
  '(custom-safe-themes
    (quote
-    ("9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+    ("3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(delete-selection-mode nil)
+ '(global-linum-mode t)
  '(ivy-height 40)
  '(package-selected-packages
    (quote
     (intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(safe-local-variable-values
    (quote
-    ((eval progn
+    ((coq-prog-args "-R" "/home/bollu/work/cpdt/src" "Cpdt")
+     (coq-prog-args "-emacs-U" "-R" "/home/bollu/work/cpdt/src" "Cpdt")
+     (eval progn
            (let
                ((coq-root-directory
                  (when buffer-file-name
@@ -292,7 +372,12 @@
 
 ;; colorscheme
 (require 'leuven-theme)
-(load-theme 'leuven)
+;; (load-theme 'flatui)
+(load-theme 'tango)
+;; (load-theme 'monokai)
+;; (load-theme 'peacock)
+
+
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
