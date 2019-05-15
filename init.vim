@@ -9,16 +9,17 @@ Plug 'cloudhead/neovim-fuzzy'
 Plug 'vim-scripts/pyte'
 Plug 'endel/vim-github-colorscheme'
 Plug 'mhinz/vim-sayonara'
+Plug 'rhysd/vim-clang-format'
 
 "Bling
 Plug 'morhetz/gruvbox'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline'
 
 "Languages
 Plug 'rust-lang/rust.vim'
 Plug 'lervag/vimtex'
 Plug 'jceb/vim-orgmode'
+Plug 'Valloric/YouCompleteMe'
 
 " Terminal
 Plug 'vimlab/split-term.vim'
@@ -80,8 +81,8 @@ nnoremap <leader><leader> V
 nnoremap <leader>1 :bp<CR>
 nnoremap <leader>2 :bn<CR>
 
-set background=light
-colorscheme github
+set background=dark
+colorscheme gruvbox
 let g:airline_theme='wombat'
 
 "set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline:h20

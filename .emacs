@@ -82,7 +82,7 @@
 (define-key global-map (kbd "C-x p") 'previous-buffer)
 
 ;;font
-(add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline-13"))
+;; (add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline-13"))
 
 ;; line  by line scrolling
 (setq scroll-step 1)
@@ -110,9 +110,9 @@
   (interactive)
   (package-initialize)
   (package-refresh-contents)
-  (let ((ps '(llvm-mode ivy evil key-chord
-              powerline company racer projectile
-              counsel-projectile leuven-theme tuareg company-coq)))
+  (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
+                   irony intro counsel-projectile leuven-theme tuareg
+                   company-coq)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -153,8 +153,8 @@
 (global-set-key (kbd "C-c a") 'org-agenda)
 
 ;;llvm-mode
-(setq load-path (cons (expand-file-name "/Users/bollu/work/LLVM-all/polly/llvm/utils/emacs") load-path))
-(require 'llvm-mode)
+;; (setq load-path (cons (expand-file-name "/Users/bollu/work/LLVM-all/polly/llvm/utils/emacs") load-path))
+;; (require 'llvm-mode)
 
 ;; evil
 ;; Disable weird evil shit for proof general
@@ -262,8 +262,8 @@
 (global-set-key (kbd "C-]") 'counsel-ag)
 
 ;;proof general
-(load "~/.emacs.d/lisp/PG/generic/proof-site")
-(coq-prefer-top-of-conclusion t)
+;; (load "~/.emacs.d/lisp/PG/generic/proof-site")
+;; (coq-prefer-top-of-conclusion t)
 
 ;;flyspell
 (require 'flyspell)
@@ -283,34 +283,34 @@
   (powerline-render (list my/tabbar-left
                           (format " %s  " (car tab))
                           my/tabbar-right)))
-(with-eval-after-load 'powerline
-  (setq my/tabbar-left (powerline-wave-right 'tabbar-default nil 24))
-  (setq my/tabbar-right (powerline-wave-left nil 'tabbar-default 24))
-  (setq tabbar-tab-label-function #'my/tabbar-tab-label-function))
-;; Note: for tabbar 2.0 use 
-;; tabbar-default not tabbar-default-face,
-;; tabbar-selected not tabbar-selected-face,
-;; tabbar-button not tabbar-button-face,
-;; tabbar-separator not tabbar-separator-face
-(set-face-attribute
- 'tabbar-default nil
- :background "gray60")
-(set-face-attribute
- 'tabbar-unselected nil
- :background "gray85"
- :foreground "gray30"
- :box nil)
-(set-face-attribute
- 'tabbar-selected nil
- :background "#f2f2f6"
- :foreground "black"
- :box nil)
-(set-face-attribute
- 'tabbar-button nil
- :box '(:line-width 1 :color "gray72" :style released-button))
-(set-face-attribute
- 'tabbar-separator-face nil
- :height 0.7)
+;; (with-eval-after-load 'powerline
+;; (setq my/tabbar-left (powerline-wave-right 'tabbar-default nil 24))
+;; (setq my/tabbar-right (powerline-wave-left nil 'tabbar-default 24))
+;; (setq tabbar-tab-label-function #'my/tabbar-tab-label-function))
+;; ;; Note: for tabbar 2.0 use 
+;; ;; tabbar-default not tabbar-default-face,
+;; ;; tabbar-selected not tabbar-selected-face,
+;; ;; tabbar-button not tabbar-button-face,
+;; ;; tabbar-separator not tabbar-separator-face
+;; (set-face-attribute
+;; 'tabbar-default nil
+;; :background "gray60")
+;; (set-face-attribute
+;; 'tabbar-unselected nil
+;; :background "gray85"
+;; :foreground "gray30"
+;; :box nil)
+;; (set-face-attribute
+;; 'tabbar-selected nil
+;; :background "#f2f2f6"
+;; :foreground "black"
+;; :box nil)
+;; (set-face-attribute
+;; 'tabbar-button nil
+;; :box '(:line-width 1 :color "gray72" :style released-button))
+;; (set-face-attribute
+;; 'tabbar-separator-face nil
+;; :height 0.7)
 
 
 ;;enable tabbar
@@ -380,7 +380,7 @@
 
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
 
