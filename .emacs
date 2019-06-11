@@ -121,7 +121,7 @@
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intro counsel-projectile leuven-theme tuareg
-                   company-coq writegood-mode merlin)))
+                   company-coq writegood-mode merlin syntax-subword)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -130,6 +130,10 @@
 ;; add mjs to javascript
 (add-to-list 'auto-mode-alist '("\\.mjs\\'" . javscript-mode))
 
+;; Treat syntactic characters as subwords so that C-backspace does not kill too much
+(require 'syntax-subword)
+(global-syntax-subword-mode)
+(setq syntax-subword-skip-spaces t)
 
 
 
@@ -365,7 +369,7 @@
  '(ivy-height 40)
  '(package-selected-packages
    (quote
-    (merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(safe-local-variable-values
    (quote
     ((coq-prog-args "-R" "/home/bollu/work/cpdt/src" "Cpdt")
