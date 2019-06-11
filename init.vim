@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 "Core
 Plug 'rust-lang/rust.vim'
+Plug 'altercation/vim-colors-solarized'
 Plug 'mhinz/vim-startify'
 Plug 'Rip-Rip/clang_complete'
 Plug 'ludovicchabant/vim-gutentags'
@@ -10,9 +11,11 @@ Plug 'vim-scripts/pyte'
 Plug 'endel/vim-github-colorscheme'
 Plug 'mhinz/vim-sayonara'
 Plug 'rhysd/vim-clang-format'
+Plug 'sheerun/vim-polyglot'
 
 "Bling
 Plug 'morhetz/gruvbox'
+Plug 'flazz/vim-colorschemes'
 "Plug 'vim-airline/vim-airline'
 
 "Languages
@@ -30,7 +33,8 @@ call plug#end()
 
 set nu
 autocmd BufEnter * silent! lcd %:p:h "set the working directory sanely
-inoremap jk <Esc>
+inoremap jk <esc>
+
 
 set termguicolors
 
@@ -81,8 +85,9 @@ nnoremap <leader><leader> V
 nnoremap <leader>1 :bp<CR>
 nnoremap <leader>2 :bn<CR>
 
+
 set background=dark
-colorscheme gruvbox
+colorscheme monokai-chris
 let g:airline_theme='wombat'
 
 "set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline:h20
