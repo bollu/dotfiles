@@ -37,9 +37,18 @@
 (electric-pair-mode 1)
 (show-paren-mode t)
 
+;; CUA-mode
+(cua-mode)
+
+;; always follow symlinks
+(setq vc-follow-symlinks t)
+
+
+;; map C-/ to toggle comment
+(global-set-key (kbd "C-x C-/") 'comment-or-uncomment-region)
 
 ;;hide cruft
-;; (tool-bar-mode -1)
+(tool-bar-mode -1)
 (setq inhibit-startup-screen t)
 
 ;;save files
@@ -112,7 +121,7 @@
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intro counsel-projectile leuven-theme tuareg
-                   company-coq)))
+                   company-coq writegood-mode)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -162,8 +171,20 @@
 (setq evil-want-abbrev-expand-on-insert-exit nil)
 (setq evil-want-C-u-scroll t)
 (require 'evil)
-(evil-mode 1)
+;; (evil-mode 1)
 
+(defalias 'vsplit 'evil-split-vertical)
+(defalias 'split 'evil-split-horizontal)
+(global-set-key (kbd "M-<left>") 'evil-window-left)
+(global-set-key (kbd "M-<right>") 'evil-window-right)
+(global-set-key (kbd "M-<up>") 'evil-window-up)
+(global-set-key (kbd "M-<down>") 'evil-window-down)
+(global-set-key (kbd "C-d") 'evil-scroll-down)
+(global-set-key (kbd "C-u") 'evil-scroll-up)
+(global-set-key (kbd "C-:") 'goto-line)
+
+;; ovewrite selected
+(delete-selection-mode 1)
 
 ;; powerline
 ;; (require 'powerline)
@@ -171,9 +192,9 @@
 
 ;;jk for evil with key-chord
 ;;Exit insert mode by pressing j and then j quickly
-(setq key-chord-two-keys-delay 0.3)
-(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-(key-chord-mode 1)
+;; (setq key-chord-two-keys-delay 0.3)
+;; (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+;; (key-chord-mode 1)
 
 ;; company - autocomplete
 (require 'company)
@@ -185,6 +206,8 @@
 (global-set-key (kbd "C-\\") 'company-complete)
 ;; (evil-declare-change-repeat 'company-complete)
 ;; (evil-declare-change-repeat 'company-complete-common)
+
+
 
 ;; make first tab pick, next tabs cycle
 ;;https://github.com/company-mode/company-mode/wiki/Switching-from-AC
@@ -210,22 +233,24 @@
 
 ;; DISABLE IRONY TILL WE CAN BUILD IT
 ;;C/C++ (1/4 of my life)
-(require 'irony)
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+;; (require 'irony)
+;; (add-hook 'c++-mode-hook 'irony-mode)
+;; (add-hook 'c-mode-hook 'irony-mode)
+;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(require 'ycmd)
+(add-hook 'c++-mode-hook 'ycmd-mode)
 
 
 
 ;; Rust (1/4 of my life)
-(require 'racer)
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
+;; (require 'racer)
+;; (add-hook 'rust-mode-hook #'racer-mode)
+;; (add-hook 'racer-mode-hook #'eldoc-mode)
 
-(add-hook 'racer-mode-hook #'company-mode)
-(require 'rust-mode)
-(define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-(setq company-tooltip-align-annotations t)
+;; (add-hook 'racer-mode-hook #'company-mode)
+;; (require 'rust-mode)
+;; (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+;; (setq company-tooltip-align-annotations t)
 
 
 ;;markdown
@@ -239,15 +264,20 @@
 (setq markdown-command "pandoc --smart -f markdown -t html")
 
 ;; ivy, swiper
+(require 'projectile)
+(require 'ivy)
+(require 'counsel)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
+(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
 (global-set-key (kbd "C-s") 'swiper)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "C-x C-p") 'counsel-projectile-switch-to-buffer)
-(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-o") 'counsel-rg)
 
+;;don't let ivy start with ^, kills the damn point of having fuzzy search
+(setq ivy-initial-inputs-alist nil)
 
 
 ;;projectile
@@ -258,8 +288,8 @@
   
 
 ;; sublime text like bindings
-(global-set-key (kbd "C-c @") 'swiper)
-(global-set-key (kbd "C-]") 'counsel-ag)
+;; (global-set-key (kbd "C-p @") 'swiper)
+
 
 ;;proof general
 ;; (load "~/.emacs.d/lisp/PG/generic/proof-site")
@@ -325,13 +355,13 @@
  '(coq-prog-name "/home/bollu/.opam/4.05.0/bin/coqtop")
  '(custom-safe-themes
    (quote
-    ("3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+    ("174502267725776b47bdd2d220f035cae2c00c818765b138fea376b2cdc15eb6" "3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(delete-selection-mode nil)
  '(global-linum-mode t)
  '(ivy-height 40)
  '(package-selected-packages
    (quote
-    (intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(safe-local-variable-values
    (quote
     ((coq-prog-args "-R" "/home/bollu/work/cpdt/src" "Cpdt")
