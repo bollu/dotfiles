@@ -121,11 +121,15 @@
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intro counsel-projectile leuven-theme tuareg
-                   company-coq writegood-mode)))
+                   company-coq writegood-mode merlin)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
-)
+  )
+
+;; add mjs to javascript
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . javscript-mode))
+
 
 
 
@@ -183,7 +187,7 @@
 (global-set-key (kbd "C-u") 'evil-scroll-up)
 (global-set-key (kbd "C-:") 'goto-line)
 
-;; ovewrite selected
+;; overwrite selected
 (delete-selection-mode 1)
 
 ;; powerline
@@ -275,7 +279,7 @@
 (global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x C-o") 'counsel-rg)
-
+(global-set-key (kbd "M-x") 'counsel-find-file)
 ;;don't let ivy start with ^, kills the damn point of having fuzzy search
 (setq ivy-initial-inputs-alist nil)
 
@@ -361,7 +365,7 @@
  '(ivy-height 40)
  '(package-selected-packages
    (quote
-    (ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(safe-local-variable-values
    (quote
     ((coq-prog-args "-R" "/home/bollu/work/cpdt/src" "Cpdt")
