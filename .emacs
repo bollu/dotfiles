@@ -39,10 +39,14 @@
 
 ;; CUA-mode
 (cua-mode)
+;; (global-set-key (kbd "C-a") 'mark-whole-buffer)
 
 ;; always follow symlinks
 (setq vc-follow-symlinks t)
 
+;; splits
+(global-set-key (kbd "C-x |") 'evil-window-vsplit)
+(global-set-key (kbd "C-x -") 'evil-window-split)
 
 ;; map C-/ to toggle comment
 (global-set-key (kbd "C-x C-/") 'comment-or-uncomment-region)
@@ -91,7 +95,7 @@
 (define-key global-map (kbd "C-x p") 'previous-buffer)
 
 ;;font
-(add-to-list 'default-frame-alist '(font . "Ubuntu Mono-18"))
+(add-to-list 'default-frame-alist '(font . "Ubuntu Mono-14"))
 
 ;; line  by line scrolling
 (setq scroll-step 1)
@@ -108,8 +112,8 @@
 
 
 ;;SMEXV over M-x
-;; (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
-;; (smex-initialize)
+(setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
+(smex-initialize)
 ;; (global-set-key (kbd "M-x") 'smex)
 ;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
@@ -121,14 +125,20 @@
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intro counsel-projectile leuven-theme tuareg
-                   company-coq writegood-mode merlin syntax-subword)))
+                   company-coq writegood-mode merlin syntax-subword auto-complete molokai
+                   expand-region)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
   )
 
+;; Use expand-region
+(require 'expand-region)
+(global-set-key (kbd "<C-up>") 'er/expand-region)
+(global-set-key (kbd "<C-down>") 'er/contract-region)
+
 ;; add mjs to javascript
-(add-to-list 'auto-mode-alist '("\\.mjs\\'" . javscript-mode))
+(add-to-list 'auto-mode-alist '("\\*.mjs\\'" . javscript-mode))
 
 ;; Treat syntactic characters as subwords so that C-backspace does not kill too much
 (require 'syntax-subword)
@@ -136,6 +146,12 @@
 (setq syntax-subword-skip-spaces t)
 
 
+(require 'multiple-cursors)
+(global-set-key (kbd "C-x C-l") 'mc/edit-beginnings-of-lines)
+(global-set-key (kbd "C-l") 'mc/edit-beginnings-of-lines)
+(global-set-key (kbd "C-x C-d") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-x C-u") 'mc/mark-previous-like-this)
+;; (global-set-key (kbd "C-<ret>") 'mc/mark-all-like-this)
 
 ;;IDO > usual mode
 ;; (Require 'Flx-Ido)
@@ -187,10 +203,33 @@
 (global-set-key (kbd "M-<right>") 'evil-window-right)
 (global-set-key (kbd "M-<up>") 'evil-window-up)
 (global-set-key (kbd "M-<down>") 'evil-window-down)
-(global-set-key (kbd "C-d") 'evil-scroll-down)
+
+
+(defun multi-cursor-or-scroll-down ()
+    "if text is selected, create multicursor, otherwise scroll down"
+  (interactive)
+  (if (use-region-p)
+      (mc/mark-next-like-this)
+    (evil-scroll-down ())))
+
+(defun search-or-multi-select ()
+  "if text is selected, create multicursor, otherwise search"
+  (interactive)
+  (if (use-region-p)
+      (mc/mark-all-in-region
+       (region-beginning)
+       (region-end)
+       (read-string "multi-selection: "))
+    (swiper)))
+
+
+(global-set-key (kbd "C-d") 'multi-cursor-or-scroll-down)
 (global-set-key (kbd "C-u") 'evil-scroll-up)
 (global-set-key (kbd "C-:") 'goto-line)
-
+(global-set-key (kbd "C-o") 'evil-jump-backward)
+(global-set-key (kbd "C-]") 'evil-jump-forward)
+(global-set-key (kbd "C-=") 'evil-indent)
+ 
 ;; overwrite selected
 (delete-selection-mode 1)
 
@@ -205,13 +244,14 @@
 ;; (key-chord-mode 1)
 
 ;; company - autocomplete
-(require 'company)
-(add-hook 'c++-mode-hook 'company-mode)
-(add-hook 'c-mode-hook 'company-mode)
-(add-hook 'c-mode-hook 'counsel-projectile-mode)
-(setq company-idle-delay 0.0)
-(global-set-key (kbd "C-/") 'company-complete)
-(global-set-key (kbd "C-\\") 'company-complete)
+;; (require 'company)
+;; (add-hook 'c++-mode-hook 'company-mode)
+;; (add-hook 'c-mode-hook 'company-mode)
+;; (add-hook 'c-mode-hook 'counsel-projectile-mode)
+;; (setq company-idle-delay 0.0)
+;; (global-set-key (kbd "C-/") 'company-complete-common-or-cycle)
+;; (global-set-key (kbd "C-\\") 'company-complete-common-or-cycle)
+;; (global-set-key (kbd "C-<tab>") 'company-complete-common-or-cycle)
 ;; (evil-declare-change-repeat 'company-complete)
 ;; (evil-declare-change-repeat 'company-complete-common)
 
@@ -219,20 +259,19 @@
 
 ;; make first tab pick, next tabs cycle
 ;;https://github.com/company-mode/company-mode/wiki/Switching-from-AC
-(eval-after-load 'company
-  '(progn
-     (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-     (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)))
-(eval-after-load 'company
-  '(progn
-     (define-key company-active-map (kbd "S-TAB") 'company-select-previous)
-     (define-key company-active-map (kbd "<backtab>") 'company-select-previous)))
-
-(setq company-frontends
-      '(company-pseudo-tooltip-unless-just-one-frontend
-        company-preview-frontend
-        company-echo-metadata-frontend))
-
+;; (eval-after-load 'company
+;;   '(progn
+;;      (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+;;      (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)))
+;; (eval-after-load 'company
+;;   '(progn
+;;      (define-key company-active-map (kbd "S-TAB") 'company-select-previous)
+;;     (define-key company-active-map (kbd "<backtab>") 'company-select-previous)))
+;; (setq company-frontends
+;;       '(company-pseudo-tooltip-unless-just-one-frontend
+;;         company-preview-frontend
+;;         company-echo-metadata-frontend))
+;; 
 ;; space key finishes completion
 ;; (setq company-auto-complete t)
 
@@ -278,12 +317,12 @@
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
-(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-s") 'search-or-multi-select)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "C-x C-o") 'counsel-rg)
-(global-set-key (kbd "M-x") 'counsel-find-file)
+(global-set-key (kbd "M-x") 'counsel-M-x)
 ;;don't let ivy start with ^, kills the damn point of having fuzzy search
 (setq ivy-initial-inputs-alist nil)
 
@@ -359,17 +398,41 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(compilation-message-face (quote default))
  '(coq-compiler "/home/bollu/.opam/4.05.0/bin/coqc")
  '(coq-prog-name "/home/bollu/.opam/4.05.0/bin/coqtop")
  '(custom-safe-themes
    (quote
-    ("174502267725776b47bdd2d220f035cae2c00c818765b138fea376b2cdc15eb6" "3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
+    ("11e57648ab04915568e558b77541d0e94e69d09c9c54c06075938b6abc0189d8" "54f2d1fcc9bcadedd50398697618f7c34aceb9966a6cbaa99829eb64c0c1f3ca" "174502267725776b47bdd2d220f035cae2c00c818765b138fea376b2cdc15eb6" "3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(delete-selection-mode nil)
+ '(fci-rule-color "#3C3D37")
  '(global-linum-mode t)
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-tail-colors
+   (quote
+    (("#3C3D37" . 0)
+     ("#679A01" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#3C3D37" . 100))))
  '(ivy-height 40)
+ '(magit-diff-use-overlays nil)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (expand-region molokai-theme monokai-theme zenburn-theme zenburn auto-complete ## syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pos-tip-background-color "#FFFACE")
+ '(pos-tip-foreground-color "#272822")
  '(safe-local-variable-values
    (quote
     ((coq-prog-args "-R" "/home/bollu/work/cpdt/src" "Cpdt")
@@ -400,7 +463,32 @@
                  (quote compilation-search-path))
                 (cons coq-root-directory nil)))
              (when coq-project-find-file
-               (setq default-directory coq-root-directory))))))))
+               (setq default-directory coq-root-directory)))))))
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D" "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF" "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2" "#F8F8F0"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -409,7 +497,9 @@
  )
 
 ;; colorscheme
-(require 'leuven-theme)
+;; (require 'leuven-theme)
+(require 'zenburn-theme)
+(load-theme 'zenburn)
 ;; (load-theme 'flatui)
 ;; (load-theme 'tango)
 ;; (load-theme 'monokai)
@@ -436,14 +526,21 @@
 ;; ===============
 ;; MERLIN + COMPANY
 ; Make company aware of merlin
-(with-eval-after-load 'company
- (add-to-list 'company-backends 'merlin-company-backend))
-; Enable company on merlin managed buffers
-(add-hook 'merlin-mode-hook 'company-mode)
-; Or enable it globally:
-; (add-hook 'after-init-hook 'global-company-mode)
+;; (with-eval-after-load 'company
+;;   (add-to-list 'company-backends 'merlin-company-backend))
+;; ; Enable company on merlin managed buffers
+;; (add-hook 'merlin-mode-hook 'company-mode)
+;; ; Or enable it globally:
+;; ;; (add-hook 'after-init-hook 'global-company-mode)
+;; 
+;; auto-complete seems to work out of the box, company _does not work_ at all.
+(require 'auto-complete)
+(ac-config-default)
+(add-hook 'after-init-hook 'global-auto-complete-mode)
+(setq tab-always-indent 'complete)
+(global-set-key (kbd "<C-tab>") 'auto-complete)
 
 
 ;; ===============
 ;; Load company-coq when opening Coq files
-(add-hook 'coq-mode-hook #'company-coq-mode)
+;; (add-hook 'coq-mode-hook #'company-coq-mode)
