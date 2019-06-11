@@ -82,7 +82,7 @@
 (define-key global-map (kbd "C-x p") 'previous-buffer)
 
 ;;font
-;; (add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline-13"))
+(add-to-list 'default-frame-alist '(font . "Ubuntu Mono-18"))
 
 ;; line  by line scrolling
 (setq scroll-step 1)
@@ -183,8 +183,8 @@
 (setq company-idle-delay 0.0)
 (global-set-key (kbd "C-/") 'company-complete)
 (global-set-key (kbd "C-\\") 'company-complete)
-(evil-declare-change-repeat 'company-complete)
-(evil-declare-change-repeat 'company-complete-common)
+;; (evil-declare-change-repeat 'company-complete)
+;; (evil-declare-change-repeat 'company-complete-common)
 
 ;; make first tab pick, next tabs cycle
 ;;https://github.com/company-mode/company-mode/wiki/Switching-from-AC
@@ -373,7 +373,7 @@
 ;; colorscheme
 (require 'leuven-theme)
 ;; (load-theme 'flatui)
-(load-theme 'tango)
+;; (load-theme 'tango)
 ;; (load-theme 'monokai)
 ;; (load-theme 'peacock)
 
