@@ -176,3 +176,8 @@ endfun
 " Using file extension
 autocmd BufWritePre *.ll,*.h,*.c*,*.hs :call <SID>StripTrailingWhitespaces()
 
+""hardmode.
+""syntax off
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
+

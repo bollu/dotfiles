@@ -134,8 +134,8 @@
 
 ;; Use expand-region
 (require 'expand-region)
-(global-set-key (kbd "<C-up>") 'er/expand-region)
-(global-set-key (kbd "<C-down>") 'er/contract-region)
+(global-set-key (kbd "<C-S-up>") 'er/expand-region)
+(global-set-key (kbd "<C-S-down>") 'er/contract-region)
 
 ;; add mjs to javascript
 (add-to-list 'auto-mode-alist '("\\*.mjs\\'" . javscript-mode))
@@ -149,8 +149,8 @@
 (require 'multiple-cursors)
 (global-set-key (kbd "C-x C-l") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-l") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "C-x C-d") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-x C-u") 'mc/mark-previous-like-this)
+(global-set-key (kbd "<C-up>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "<C-down>") 'mc/mark-next-like-this)
 ;; (global-set-key (kbd "C-<ret>") 'mc/mark-all-like-this)
 
 ;;IDO > usual mode
@@ -226,8 +226,30 @@
 (global-set-key (kbd "C-d") 'multi-cursor-or-scroll-down)
 (global-set-key (kbd "C-u") 'evil-scroll-up)
 (global-set-key (kbd "C-:") 'goto-line)
-(global-set-key (kbd "C-o") 'evil-jump-backward)
-(global-set-key (kbd "C-]") 'evil-jump-forward)
+(require 'helm)
+(global-set-key (kbd "C-]") 'helm-all-mark-rings)
+;; (global-set-key (kbd "C-o") 'helm-all-mark-rings)
+
+(require 'torus)
+(setq torus-prefix-key "C-o")
+(setq torus-binding-level 1)
+(setq torus-display-tab-bar t)
+(torus-init)
+(torus-install-default-bindings)
+
+;; Created if non existent
+(setq torus-dirname "~/.emacs.d/torus/")
+
+;; Set it to t if you want autoload of torus on Emacs startup
+(setq torus-load-on-startup t)
+
+;; Set it to t if you want autosave of torus on Emacs exit
+(setq torus-save-on-exit t)
+
+;; Where to auto load & save torus
+(setq torus-autoread-file "~/.emacs.d/torus/last.el")
+(setq torus-autowrite-file torus-autoread-file)
+
 (global-set-key (kbd "C-=") 'evil-indent)
  
 ;; overwrite selected
@@ -391,7 +413,7 @@
 
 
 ;;enable tabbar
-(tabbar-mode 1)
+;; (tabbar-mode 1)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -429,7 +451,7 @@
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (expand-region molokai-theme monokai-theme zenburn-theme zenburn auto-complete ## syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (torus helm expand-region molokai-theme monokai-theme zenburn-theme zenburn auto-complete ## syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
