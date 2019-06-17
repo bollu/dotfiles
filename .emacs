@@ -18,6 +18,14 @@
 ;; (package-refresh-contents)
 (package-initialize)
 
+;; suspend emcas
+(define-key global-map (kbd "C-c C-z") 'suspend-emacs)
+
+;; LLVM-mode
+(setq load-path (cons (expand-file-name "path-to-llvm/utils/emacs") load-path))
+(require 'llvm-mode)
+
+
 (require 'cl)
 ;; hide menubar and toolbar
 (menu-bar-mode -1)
@@ -40,6 +48,7 @@
 ;; CUA-mode
 (cua-mode)
 ;; (global-set-key (kbd "C-a") 'mark-whole-buffer)
+(define-key cua-global-keymap (kbd "<C-return>") nil)
 
 ;; always follow symlinks
 (setq vc-follow-symlinks t)
@@ -47,6 +56,7 @@
 ;; splits
 (global-set-key (kbd "C-x |") 'evil-window-vsplit)
 (global-set-key (kbd "C-x -") 'evil-window-split)
+
 
 ;; map C-/ to toggle comment
 (global-set-key (kbd "C-x C-/") 'comment-or-uncomment-region)
@@ -95,28 +105,12 @@
 (define-key global-map (kbd "C-x p") 'previous-buffer)
 
 ;;font
-(add-to-list 'default-frame-alist '(font . "Ubuntu Mono-14"))
+(add-to-list 'default-frame-alist '(font . "Fira Code Medium-14"))
 
 ;; line  by line scrolling
 (setq scroll-step 1)
 ;; spaces for tab
 (setq-default indent-tabs-mode nil) 
-
-; ========== Enable Line and Column Numbering ==========
-
-;; Show line-number in the mode line
-(line-number-mode 1)
-
-;; Show column-number in the mode line
-(column-number-mode 1)
-
-
-;;SMEXV over M-x
-(setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
-(smex-initialize)
-;; (global-set-key (kbd "M-x") 'smex)
-;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-
 
 (defun install-all-packages ()
   "install / update all packages I care about"
@@ -124,9 +118,9 @@
   (package-initialize)
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
-                   irony intro counsel-projectile leuven-theme tuareg
+                   irony intero counsel-projectile leuven-theme tuareg
                    company-coq writegood-mode merlin syntax-subword auto-complete molokai
-                   expand-region)))
+                   expand-region evil-surround dumb-jump)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -134,8 +128,10 @@
 
 ;; Use expand-region
 (require 'expand-region)
-(global-set-key (kbd "<C-S-up>") 'er/expand-region)
-(global-set-key (kbd "<C-S-down>") 'er/contract-region)
+(global-set-key (kbd "<C-return>") 'er/expand-region)
+(global-set-key (kbd "<C-S-return>") 'er/contract-region)
+;; (global-set-key (kbd "<C-S-up>") 'er/expand-region)
+;; (global-set-key (kbd "<C-S-down>") 'er/contract-region)
 
 ;; add mjs to javascript
 (add-to-list 'auto-mode-alist '("\\*.mjs\\'" . javscript-mode))
@@ -149,8 +145,8 @@
 (require 'multiple-cursors)
 (global-set-key (kbd "C-x C-l") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-l") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "<C-up>") 'mc/mark-previous-like-this)
-(global-set-key (kbd "<C-down>") 'mc/mark-next-like-this)
+(global-set-key (kbd "<C-S-up>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "<C-S-down>") 'mc/mark-next-like-this)
 ;; (global-set-key (kbd "C-<ret>") 'mc/mark-all-like-this)
 
 ;;IDO > usual mode
@@ -182,6 +178,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p) ; y or n is enough
 (defalias 'list-buffers 'ibuffer) ; always use ibuffer
 
+
 ;;org-mode
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -190,12 +187,23 @@
 ;; (require 'llvm-mode)
 
 ;; evil
+;; Evil interferes with too much. disable it.
 ;; Disable weird evil shit for proof general
 ;; https://github.com/syl20bnr/spacemacs/issues/8853
-(setq evil-want-abbrev-expand-on-insert-exit nil)
-(setq evil-want-C-u-scroll t)
+;; (setq evil-want-abbrev-expand-on-insert-exit nil)
+;; (setq evil-want-C-u-scroll t)
 (require 'evil)
 ;; (evil-mode 1)
+;;jk for evil with key-chord
+;;Exit insert mode by pressing j and then j quickly
+;;(setq key-chord-two-keys-delay 0.3)
+;;(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+;;(key-chord-mode 1)
+
+;; Scroll up and down with C-d, C-u
+(global-set-key (kbd "C-d") 'evil-scroll-down)
+(global-set-key (kbd "C-u") 'evil-scroll-up)
+
 
 (defalias 'vsplit 'evil-split-vertical)
 (defalias 'split 'evil-split-horizontal)
@@ -203,54 +211,22 @@
 (global-set-key (kbd "M-<right>") 'evil-window-right)
 (global-set-key (kbd "M-<up>") 'evil-window-up)
 (global-set-key (kbd "M-<down>") 'evil-window-down)
+(global-set-key (kbd "C-:") 'goto-line)
+(global-set-key (kbd "C-=") 'indent-region)
+(global-set-key (kbd "C-]") 'dumb-jump-go)
 
 
-(defun multi-cursor-or-scroll-down ()
+(defun multi-cursor-in-region ()
     "if text is selected, create multicursor, otherwise scroll down"
-  (interactive)
-  (if (use-region-p)
-      (mc/mark-next-like-this)
-    (evil-scroll-down ())))
-
-(defun search-or-multi-select ()
-  "if text is selected, create multicursor, otherwise search"
   (interactive)
   (if (use-region-p)
       (mc/mark-all-in-region
        (region-beginning)
        (region-end)
        (read-string "multi-selection: "))
-    (swiper)))
+    (mc/mark-next-like-this)))
 
 
-(global-set-key (kbd "C-d") 'multi-cursor-or-scroll-down)
-(global-set-key (kbd "C-u") 'evil-scroll-up)
-(global-set-key (kbd "C-:") 'goto-line)
-(require 'helm)
-(global-set-key (kbd "C-]") 'helm-all-mark-rings)
-;; (global-set-key (kbd "C-o") 'helm-all-mark-rings)
-
-(require 'torus)
-(setq torus-prefix-key "C-o")
-(setq torus-binding-level 1)
-(setq torus-display-tab-bar t)
-(torus-init)
-(torus-install-default-bindings)
-
-;; Created if non existent
-(setq torus-dirname "~/.emacs.d/torus/")
-
-;; Set it to t if you want autoload of torus on Emacs startup
-(setq torus-load-on-startup t)
-
-;; Set it to t if you want autosave of torus on Emacs exit
-(setq torus-save-on-exit t)
-
-;; Where to auto load & save torus
-(setq torus-autoread-file "~/.emacs.d/torus/last.el")
-(setq torus-autowrite-file torus-autoread-file)
-
-(global-set-key (kbd "C-=") 'evil-indent)
  
 ;; overwrite selected
 (delete-selection-mode 1)
@@ -259,11 +235,9 @@
 ;; (require 'powerline)
 ;; (powerline-default-theme)
 
-;;jk for evil with key-chord
-;;Exit insert mode by pressing j and then j quickly
-;; (setq key-chord-two-keys-delay 0.3)
-;; (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-;; (key-chord-mode 1)
+
+;; evil-surround
+
 
 ;; company - autocomplete
 ;; (require 'company)
@@ -339,7 +313,7 @@
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
-(global-set-key (kbd "C-s") 'search-or-multi-select)
+(global-set-key (kbd "C-s") 'swiper)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -451,7 +425,7 @@
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (torus helm expand-region molokai-theme monokai-theme zenburn-theme zenburn auto-complete ## syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
+    (dumb-jump evil-surround torus helm expand-region molokai-theme monokai-theme zenburn-theme zenburn auto-complete ## syntax-subword smart-hungry-delete merlin ycmd writegood-mode clang-format proof-general markdown-mode intero company-irony haskell-mode haskell-emacs web-mode solarized-theme smex racket-mode racer projectile material-theme markdown-preview-mode magit key-chord js2-mode ido-vertical-mode flx-ido evil company badwolf-theme)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
