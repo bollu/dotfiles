@@ -26,6 +26,22 @@
 (require 'llvm-mode)
 
 
+;; emacs go back
+;; (require 'back-button)
+;; (back-button-mode 1)
+;; (global-set-key (kbd "C-x p") 'helm-global-mark-ring)
+;; (global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
+(require 'backward-forward)
+(global-set-key (kbd "C-x p") 'helm-global-mark-ring)
+(global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
+
+;; guess indent
+(require 'dtrt-indent)
+(dtrt-indent-global-mode t)
+
+(require 'smartparens)
+(smartparens-global-mode)
+
 (require 'cl)
 ;; hide menubar and toolbar
 (menu-bar-mode -1)
@@ -120,7 +136,7 @@
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intero counsel-projectile leuven-theme tuareg
                    company-coq writegood-mode merlin syntax-subword auto-complete molokai
-                   expand-region evil-surround dumb-jump)))
+                   expand-region evil-surround dumb-jump dtrt-indent backward-forward)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
@@ -134,7 +150,8 @@
 ;; (global-set-key (kbd "<C-S-down>") 'er/contract-region)
 
 ;; add mjs to javascript
-(add-to-list 'auto-mode-alist '("\\*.mjs\\'" . javscript-mode))
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . javscript-mode))
 
 ;; Treat syntactic characters as subwords so that C-backspace does not kill too much
 (require 'syntax-subword)
