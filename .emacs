@@ -26,14 +26,27 @@
 (require 'llvm-mode)
 
 
-;; emacs go back
+;; emacs go back and forth between marks
 ;; (require 'back-button)
 ;; (back-button-mode 1)
 ;; (global-set-key (kbd "C-x p") 'helm-global-mark-ring)
 ;; (global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
 (require 'backward-forward)
+(backward-forward-mode)
+;; unbind default keys
+(define-key backward-forward-mode-map (kbd "<C-left>") nil)
+(define-key backward-forward-mode-map (kbd "<C-right>") nil)
+
+(global-set-key (kbd "C-x <left>") 'backward-forward-previous-location)
+(global-set-key (kbd "C-x <C-left>") 'backward-forward-previous-location)
+(global-set-key (kbd "C-x <right>") 'backward-forward-next-location)
+(global-set-key (kbd "C-x <C-right>") 'backward-forward-next-location)
 (global-set-key (kbd "C-x p") 'helm-global-mark-ring)
 (global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
+
+;; buffer naviation with C-tab
+(global-set-key (kbd "<C-tab>") 'next-buffer)
+(global-set-key (kbd "<C-S-iso-lefttab>") 'previous-buffer)
 
 ;; guess indent
 (require 'dtrt-indent)
@@ -230,7 +243,10 @@
 (global-set-key (kbd "M-<down>") 'evil-window-down)
 (global-set-key (kbd "C-:") 'goto-line)
 (global-set-key (kbd "C-=") 'indent-region)
+
+;; dumb-jump: go to definition using regex / patterns.
 (global-set-key (kbd "C-]") 'dumb-jump-go)
+(setq dumb-jump-selector 'ivy)
 
 
 (defun multi-cursor-in-region ()
@@ -355,6 +371,9 @@
 ;; (load "~/.emacs.d/lisp/PG/generic/proof-site")
 ;; (coq-prefer-top-of-conclusion t)
 
+;; sane line numbers
+(global-display-line-numbers-mode)
+
 ;;flyspell
 (require 'flyspell)
 (flyspell-mode +1)
@@ -423,7 +442,6 @@
     ("11e57648ab04915568e558b77541d0e94e69d09c9c54c06075938b6abc0189d8" "54f2d1fcc9bcadedd50398697618f7c34aceb9966a6cbaa99829eb64c0c1f3ca" "174502267725776b47bdd2d220f035cae2c00c818765b138fea376b2cdc15eb6" "3448e3f5d01b39ce75962328a5310438e4a19e76e4b691c21c8e04ca318a5f62" "e4859645a914c748b966a1fe53244ff9e043e00f21c5989c4a664d649838f6a3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "75c5c39809c52d48cb9dcbf1694bf2d27d5f6fd053777c194e0b69d8e49031c0" "54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" "81db42d019a738d388596533bd1b5d66aef3663842172f3696733c0aab05a150" "718fb4e505b6134cc0eafb7dad709be5ec1ba7a7e8102617d87d3109f56d9615" "c90fd1c669f260120d32ddd20168343f5c717ca69e95d2f805e42e88430c340e" "15348febfa2266c4def59a08ef2846f6032c0797f001d7b9148f30ace0d08bcf" "3b5ce826b9c9f455b7c4c8bff22c020779383a12f2f57bf2eb25139244bb7290" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "ad109c1ad8115573f40e22ac2b996693b5d48052fa37b5919f70ea37c62a965e" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "9a155066ec746201156bb39f7518c1828a73d67742e11271e4f24b7b178c4710" "d5f17ae86464ef63c46ed4cb322703d91e8ed5e718bf5a7beb69dd63352b26b2" "f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "d29231b2550e0d30b7d0d7fc54a7fb2aa7f47d1b110ee625c1a56b30fea3be0f" "10e231624707d46f7b2059cc9280c332f7c7a530ebc17dba7e506df34c5332c4" "604648621aebec024d47c352b8e3411e63bdb384367c3dd2e8db39df81b475f5" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" default)))
  '(delete-selection-mode nil)
  '(fci-rule-color "#3C3D37")
- '(global-linum-mode t)
  '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
  '(highlight-tail-colors
    (quote
@@ -512,7 +530,7 @@
 ;; colorscheme
 ;; (require 'leuven-theme)
 (require 'zenburn-theme)
-(load-theme 'zenburn)
+;; (load-theme 'zenburn)
 ;; (load-theme 'flatui)
 ;; (load-theme 'tango)
 ;; (load-theme 'monokai)
@@ -551,7 +569,8 @@
 (ac-config-default)
 (add-hook 'after-init-hook 'global-auto-complete-mode)
 (setq tab-always-indent 'complete)
-(global-set-key (kbd "<C-tab>") 'auto-complete)
+(global-set-key (kbd "C-SPC") 'auto-complete)
+
 
 
 ;; ===============
