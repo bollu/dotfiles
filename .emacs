@@ -148,8 +148,9 @@
   (package-refresh-contents)
   (let ((ps '(ivy evil key-chord powerline company racer projectile tabbar
                    irony intero counsel-projectile leuven-theme tuareg
-                   company-coq writegood-mode merlin syntax-subword auto-complete molokai
-                   expand-region evil-surround dumb-jump dtrt-indent backward-forward)))
+                   company-coq writegood-mode merlin syntax-subword auto-complete molokai-theme
+                   expand-region evil-surround dumb-jump dtrt-indent backward-forward
+		   dtrt-indent smartparens expand-region multiple-cursors ycmd zenburn-theme)))
     (dolist (p ps)
       (when (not (package-installed-p p))
         (package-install p))))
