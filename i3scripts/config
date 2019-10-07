@@ -161,7 +161,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # }
 
 # Background
-exec --no-startup-id nitrogen $HOME/Pictures/wallpaper.png
+exec --no-startup-id nitrogen --set-scaled /home/bollu/Pictures/wall.jpg
 
 # Make Caps Lock a Control key
 exec --no-startup-id setxkbmap -option ctrl:nocaps
@@ -188,5 +188,3 @@ bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -R
 bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+1 i3blocks
 bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+1 i3blocks
 
-# background
-exec --no-startup-id feh --bg-fill /home/bollu/Pictures/wall.jpg

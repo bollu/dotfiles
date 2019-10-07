@@ -1,5 +1,5 @@
-(load "server")
-(unless (server-running-p) (server-start))
+;; (load "server")
+;; (unless (server-running-p) (server-start))
 
 ;;(setq url-proxy-services
 ;;      '(("http" .  "http://proxy.iiit.ac.in:8080")
@@ -22,8 +22,8 @@
 (define-key global-map (kbd "C-c C-z") 'suspend-emacs)
 
 ;; LLVM-mode
-(setq load-path (cons (expand-file-name "path-to-llvm/utils/emacs") load-path))
-(require 'llvm-mode)
+;; (setq load-path (cons (expand-file-name "path-to-llvm/utils/emacs") load-path))
+;; (require 'llvm-mode)
 
 
 ;; emacs go back and forth between marks
@@ -31,18 +31,18 @@
 ;; (back-button-mode 1)
 ;; (global-set-key (kbd "C-x p") 'helm-global-mark-ring)
 ;; (global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
-(require 'backward-forward)
-(backward-forward-mode)
-;; unbind default keys
-(define-key backward-forward-mode-map (kbd "<C-left>") nil)
-(define-key backward-forward-mode-map (kbd "<C-right>") nil)
-
-(global-set-key (kbd "C-x <left>") 'backward-forward-previous-location)
-(global-set-key (kbd "C-x <C-left>") 'backward-forward-previous-location)
-(global-set-key (kbd "C-x <right>") 'backward-forward-next-location)
-(global-set-key (kbd "C-x <C-right>") 'backward-forward-next-location)
-(global-set-key (kbd "C-x p") 'helm-global-mark-ring)
-(global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
+;; (require 'backward-forward)
+;; (backward-forward-mode)
+;; ;; unbind default keys
+;; (define-key backward-forward-mode-map (kbd "<C-left>") nil)
+;; (define-key backward-forward-mode-map (kbd "<C-right>") nil)
+;; 
+;; (global-set-key (kbd "C-x <left>") 'backward-forward-previous-location)
+;; (global-set-key (kbd "C-x <C-left>") 'backward-forward-previous-location)
+;; (global-set-key (kbd "C-x <right>") 'backward-forward-next-location)
+;; (global-set-key (kbd "C-x <C-right>") 'backward-forward-next-location)
+;; (global-set-key (kbd "C-x p") 'helm-global-mark-ring)
+;; (global-set-key (kbd "C-x C-p") 'helm-global-mark-ring)
 
 ;; buffer naviation with C-tab
 (global-set-key (kbd "<C-tab>") 'next-buffer)
@@ -63,21 +63,15 @@
 ;;allow GC to use memory
 (setq gc-cons-threshold 20000000)
 
-;; spell check
-(if (eq system-type 'darwin)
-    (setq-default ispell-program-name "/usr/local/bin/aspell")
-  (setq-default ispell-program-name "/usr/bin/aspell"))
-(setq-default ispell-list-command "list")
-
 
 ;;parens niceness
 (electric-pair-mode 1)
 (show-paren-mode t)
 
 ;; CUA-mode
-(cua-mode)
+;; (cua-mode)
 ;; (global-set-key (kbd "C-a") 'mark-whole-buffer)
-(define-key cua-global-keymap (kbd "<C-return>") nil)
+;; (define-key cua-global-keymap (kbd "<C-return>") nil)
 
 ;; always follow symlinks
 (setq vc-follow-symlinks t)
@@ -124,20 +118,12 @@
 ;; (define-key global-map (kbd "C-x b") 'ibuffer)
 (require 'ido)
 (ido-mode t)
-;; (define-key global-map (kbd "C-x b") 'ido-bu)
-
-(define-key global-map (kbd "C-x n") 'next-buffer)
-(define-key global-map (kbd "C-x C-n") 'next-buffer)
-(define-key global-map (kbd "M-n") 'next-buffer)
-
-(define-key global-map (kbd "M-p") 'previous-buffer)
-(define-key global-map (kbd "C-x p") 'previous-buffer)
 
 ;;font
-(add-to-list 'default-frame-alist '(font . "Fira Code Medium-14"))
+;; (add-to-list 'default-frame-alist '(font . "Fira Code Medium-14"))
 
 ;; line  by line scrolling
-(setq scroll-step 1)
+;; (setq scroll-step 1)
 ;; spaces for tab
 (setq-default indent-tabs-mode nil) 
 
@@ -178,6 +164,9 @@
 (global-set-key (kbd "C-l") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "<C-S-up>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "<C-S-down>") 'mc/mark-next-like-this)
+(global-set-key (kbd "<C-S-u>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "<C-S-d>") 'mc/mark-next-like-this)
+
 ;; (global-set-key (kbd "C-<ret>") 'mc/mark-all-like-this)
 
 ;;IDO > usual mode
@@ -203,15 +192,11 @@
 
 
 ;;disallow org from reformatting source blocks
-(setq org-src-preserve-indentation t)
-
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y or n is enough
 (defalias 'list-buffers 'ibuffer) ; always use ibuffer
 
 
-;;org-mode
-(global-set-key (kbd "C-c a") 'org-agenda)
 
 ;;llvm-mode
 ;; (setq load-path (cons (expand-file-name "/Users/bollu/work/LLVM-all/polly/llvm/utils/emacs") load-path))
@@ -221,10 +206,10 @@
 ;; Evil interferes with too much. disable it.
 ;; Disable weird evil shit for proof general
 ;; https://github.com/syl20bnr/spacemacs/issues/8853
-;; (setq evil-want-abbrev-expand-on-insert-exit nil)
-;; (setq evil-want-C-u-scroll t)
+(setq evil-want-abbrev-expand-on-insert-exit nil)
+(setq evil-want-C-u-scroll t)
 (require 'evil)
-;; (evil-mode 1)
+(evil-mode 1)
 ;;jk for evil with key-chord
 ;;Exit insert mode by pressing j and then j quickly
 ;;(setq key-chord-two-keys-delay 0.3)
@@ -314,10 +299,6 @@
 ;; (add-hook 'c++-mode-hook 'irony-mode)
 ;; (add-hook 'c-mode-hook 'irony-mode)
 ;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-(require 'ycmd)
-(add-hook 'c++-mode-hook 'ycmd-mode)
-
-
 
 ;; Rust (1/4 of my life)
 ;; (require 'racer)
@@ -337,7 +318,6 @@
           (lambda ()
             (visual-line-mode t)
             (writegood-mode t)))
-
 (setq markdown-command "pandoc --smart -f markdown -t html")
 
 ;; ivy, swiper
@@ -376,14 +356,14 @@
 (global-display-line-numbers-mode)
 
 ;;flyspell
-(require 'flyspell)
-(flyspell-mode +1)
-;; spell checking in comments
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; (require 'flyspell)
+;; (flyspell-mode +1)
+;; ;; spell checking in comments
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 ;; make sure spell checking works
-(setq-default ispell-program-name "aspell")
-(ispell-change-dictionary "en_GB" t)
+;; (setq-default ispell-program-name "aspell")
+;; (ispell-change-dictionary "en_GB" t)
 
 
 ;;tabbar (pimped from here:  http://amitp.blogspot.com/2007/04/emacs-buffer-tabs.html)
@@ -530,7 +510,7 @@
 
 ;; colorscheme
 ;; (require 'leuven-theme)
-(require 'zenburn-theme)
+;; (require 'zenburn-theme)
 ;; (load-theme 'zenburn)
 ;; (load-theme 'flatui)
 ;; (load-theme 'tango)
