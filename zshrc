@@ -234,3 +234,9 @@ alias copyfile='xclip -selection clipboard'
 alias pastefile='xclip -selection clipboard -o'
 alias xcopy='xclip -selection clipboard'
 alias xpaste='xclip -selection clipboard -o'
+
+export OPENSCADPATH=$OPENSCADPATH:/home/bollu/software/dotSCAD/src
+
+$HOME/dotfiles/newword.sh
+alias newword=$HOME/dotfiles/newword.sh
+alias word=$HOME/dotfiles/newword.sh
