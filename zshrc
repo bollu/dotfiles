@@ -1,9 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 #
-HISTSIZE=5000               #How many lines of history to keep in memory
+HISTSIZE=500000               #How many lines of history to keep in memory
 HISTFILE=~/.zsh_history     #Where to save history to disk
-SAVEHIST=5000               #Number of history entries to save to disk
+SAVEHIST=500000               #Number of history entries to save to disk
 #HISTDUP=erase               #Erase duplicates in the history file
 setopt    appendhistory     #Append history to the history file (no overwriting)
 setopt    sharehistory      #Share history across terminals
@@ -13,6 +13,10 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 bindkey '^x^e' edit-command-line
+
+# enable pushd/popd by default to work
+setopt autopushd
+
 
 
 autoload -Uz compinit promptinit
@@ -196,3 +200,4 @@ cat ~/urgent.md
 
 $HOME/dotfiles/newword.sh 
 source ~/dotfiles/ghci-core.sh
+alias vim=kak

@@ -1,4 +1,6 @@
-colorscheme github
+# colorscheme github
+colorscheme solarized-light
+
 
 
 # https://discuss.kakoune.com/t/sublime-text-style-multiple-cursor-select-add-mapping/150
@@ -14,7 +16,19 @@ select-or-add-cursor %{
     } catch nop
 }
 
-map global normal '<c-d>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match" 
+map global normal '<s-d>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match" 
+map global normal '1' '<S-g>h'
+map global normal '$' '<S-g>l'
+map global normal '0' '<S-g>l'
+
+
+
+# https://github.com/mawww/kakoune/wiki/Avoid-the-escape-key
+hook global InsertChar k %{ try %{
+      exec -draft hH <a-k>jk<ret> d
+        exec <esc>
+        # exec <space>
+}}
 
 
 # https://raw.githubusercontent.com/lenormf/out-of-the-box/master/oob.kak

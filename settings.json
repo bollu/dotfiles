@@ -1,0 +1,18 @@
+{
+    "C_Cpp.updateChannel": "Insiders",
+    "window.zoomLevel": 0,
+    "cmake.configureOnOpen": true,
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "cmake.cmakePath": "/home/bollu/.local/cmake-3.17.3-Linux-x86_64/bin/cmake",
+    "workbench.colorTheme": "Visual Studio Light",
+    "editor.minimap.enabled": false,
+    "[cpp]": {
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true
+    }
+
+}

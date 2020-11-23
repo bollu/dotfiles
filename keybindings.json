@@ -1,0 +1,9 @@
+// CLion keybindings: Place your key bindings in this file to override the defaults
+[
+    { "key": "alt+ctrl+-",            "command": "workbench.action.navigateBack" },
+    { "key": "alt+ctrl+=",          "command": "workbench.action.navigateForward" },
+    { "key": "alt+ctrl+=",          "command": "workbench.action.navigateForward" },
+    { "key": "ctrl+b",                    "command": "cmake.build",
+        "when": "cmake:enableFullFeatureSet && !cmake:hideBuildCommand" },
+
+]
