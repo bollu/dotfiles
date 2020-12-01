@@ -188,12 +188,11 @@ exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/kakoune.png
 exec --no-startup-id setxkbmap -option ctrl:nocaps
 
 # Screen brightness controls
-bindsym XF86MonBrightnessUp exec  brightnessctl s 100+
-bindsym XF86MonBrightnessDown exec brightnessctl s 100-
+bindsym XF86MonBrightnessUp exec  brightnessctl s 20+
+bindsym XF86MonBrightnessDown exec brightnessctl s 20-
 
-# Keyboard backlight controls
-bindsym XF86KbdBrightnessUp exec --no-startup-id  brightnessctl s 100+ 
-bindsym XF86KbdBrightnessDown exec --no-startup-id  brightnessctl s 100-
+
+
 
 bindsym XF86PowerOff exec --no-startup-id "$HOME/.scripts/dmesg-prompt 'You pressed the power button. Do you really want to shut down?' 'sudo poweroff'"
 

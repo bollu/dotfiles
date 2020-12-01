@@ -1,7 +1,5 @@
-# colorscheme github
-colorscheme solarized-light
-
-
+colorscheme github
+# colorscheme solarized-light
 
 # https://discuss.kakoune.com/t/sublime-text-style-multiple-cursor-select-add-mapping/150
 
@@ -20,7 +18,6 @@ map global normal '<s-d>' ': select-or-add-cursor<ret>' -docstring "add cursor o
 map global normal '1' '<S-g>h'
 map global normal '$' '<S-g>l'
 map global normal '0' '<S-g>l'
-
 
 
 # https://github.com/mawww/kakoune/wiki/Avoid-the-escape-key
