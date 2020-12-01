@@ -6,7 +6,11 @@ import locale
 import sys
 from os import path
 import signal
+import pygments
+import pygments.formatters
+import pygments.lexers
 import gdb
+
 
 NUM_SOURCE_CODE_LINES_TO_SHOW = 10
 NUM_TTY_COLS = 80
@@ -20,6 +24,9 @@ HORIZONTAL_LINE = "\u2500"
 VERTICAL_LINE = "\u2502"
 CROSS = "\u2718 "
 TICK = "\u2713 "
+
+PYGMENTS_FORMATTER = pygments.formatters.Terminal256Formatter(style=str("manni"))
+PYGMENTS_LEXER_CACHE = {}
 
 
 # === Color library (stolen from GEF) ===
@@ -155,10 +162,21 @@ gdb.execute("set prompt %s" % Color.redify("gdb$ "))
 ### ===Context  ===
 # from pwndbg/commands/context
 def get_highlight_source(filename):
-    # TODO: use pygments
-    # source = H.syntax_highlight(source, filename)
+    global PYGMENTS_LEXER_CACHE
+
     with open(filename, encoding='utf-8') as f:
         source = f.read()
+    try:
+        if filename in PYGMENTS_LEXER_CACHE:
+            lexer = PYGMENTS_LEXER_CACHE[filename]
+        else:
+            lexer = pygments.lexers.guess_lexer_for_filename(filename, source, stripnl=False)
+            PYGMENTS_LEXER_CACHE[filename] = lexer
+            
+        source =  pygments.highlight(source, lexer, PYGMENTS_FORMATTER).rstrip()
+    except pygments.util.ClassNotFound:
+        pass
+
     source_lines = source.splitlines()
     source_lines = tuple(line.rstrip() for line in source_lines)
     return source_lines
