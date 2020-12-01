@@ -11,6 +11,7 @@ import gdb
 NUM_SOURCE_CODE_LINES_TO_SHOW = 10
 NUM_TTY_COLS = 80
 NUM_BACKTRACE_LINES = 30
+NUM_ARG_PRINT_CHARS = 50
 
 LEFT_ARROW = " \u2190 "
 RIGHT_ARROW = " \u2192 "
@@ -162,7 +163,7 @@ def get_highlight_source(filename):
     source_lines = tuple(line.rstrip() for line in source_lines)
     return source_lines
 
-def get_filename_and_formatted_source():
+def get_filename_and_formatted_source(nlines):
     """
     Returns formatted, lines limited and highlighted source as list
     or if it isn't there - an empty list
@@ -187,8 +188,8 @@ def get_filename_and_formatted_source():
 
 
     # Compute the line range
-    start = max(closest_line - 1 - NUM_SOURCE_CODE_LINES_TO_SHOW//2, 0)
-    end = min(closest_line - 1 + NUM_SOURCE_CODE_LINES_TO_SHOW//2 + 1, len(source))
+    start = max(closest_line - 1 - nlines//2, 0)
+    end = min(closest_line - 1 + nlines//2 + 1, len(source))
     num_width = len(str(end))
 
     # split the code
@@ -329,6 +330,20 @@ def gef_disassemble(addr, nb_insn, nb_prev=0):
         yield insn
 
 
+def indent_string(ss, nindent):
+    """indent string ss by length nindent"""
+    out = ' ' * nindent
+    for s in ss.strip().split("\n"):
+        out += "\n" + ' '*nindent + s
+    return out
+
+def truncate_string(s, nlines):
+    """truncate string to nlines lines"""
+    ssplit = s.split("\n")
+    if len(ssplit) <= nlines:
+        return s
+    return "\n".join(ssplit[:nlines//2]) + "\n...\n" + "\n".join(ssplit[:nlines//2])
+
 def context_backtrace():
 
     this_frame    = gdb.selected_frame()
@@ -370,25 +385,27 @@ def context_backtrace():
         items.append("[%s]" % Color.colorify("#%s" % i, "bold pink"))
 
         
+        if this_frame == current_frame:
+            items.append(Color.colorify(name, "bold pink"))
+        else: 
+            items.append(name)
 
-        items.append(name)
         if fn: items.append("%s:%s" % (fn.symtab.filename, fn.line))
         items.append("{:#x}".format(pc))
-        # raise RuntimeError("FRAME CONTENTS: %s" % "\n".join(map(str, dir(current_frame))))
-        # if name:
-        #     frame_args = gdb.FrameDecorator.FrameDecorator(current_frame).frame_args() or []
-        #     m = "{}({})".format(Color.greenify(name),
-        #                         ", ".join(["{}={!s}".format(Color.yellowify(x.sym),
-        #                                                     x.sym.value(current_frame)) for x in frame_args]))
-        #     items.append(m)
-        # else:
-        #     try:
-        #         insn = next(gef_disassemble(pc, 1))
-        #     except gdb.MemoryError:
-        #         break
-        #     items.append(Color.redify("{} {}".format(insn.mnemonic, ", ".join(insn.operands))))
+
+        frame_args = gdb.FrameDecorator.FrameDecorator(current_frame).frame_args() or []
 
         print("%s" % (" ".join(items)))
+
+        
+        args = []
+        for arg in frame_args:
+            # argval = str(arg.sym.value(current_frame))
+            args.append("%s %s" % (arg.sym.type, Color.boldify(str(arg.sym))))
+            # args.append(str(arg.sym.type))
+            # args.append(str(arg.sym))
+
+        print(' '*(len(CUR_FRAME_POINTER) + 2) +  "; ".join(args))
 
         if current_frame == oldest_frame:
             break
@@ -408,11 +425,39 @@ class CtxCommand(gdb.Command):
         return gdb.COMPLETE_SYMBOL
 
     def invoke(self, args, from_tty: bool):
-        filename, formatted_source = get_filename_and_formatted_source()
-        print_title("source: %s" % (filename, ))
-        print("\n".join(formatted_source) if formatted_source else "<no source>")
-        print_title("backtrace")
-        context_backtrace()
+        args = [arg.strip() for arg in  args.strip().split(" ") if arg.strip() ]
+        # print("args: %s" % args)
+        if args == []:
+            filename, formatted_source = get_filename_and_formatted_source(NUM_SOURCE_CODE_LINES_TO_SHOW)
+            print_title("source: %s" % (filename, ))
+            print("\n".join(formatted_source) if formatted_source else "<no source>")
+            print_title("backtrace")
+            context_backtrace()
+            return
 
+        if args[0] == "source" or args[0] == "src" or args[0] == "s":
+            nlines = 20 if len(args) < 2 else int(args[1])
+            filename, formatted_source = get_filename_and_formatted_source(nlines)
+            print_title("source: %s" % (filename, ))
+            print("\n".join(formatted_source) if formatted_source else "<no source>")
+            return
+
+        if args[0] == "backtrace" or args[0] == "bt" or args[0] == "b":
+            # print specific frame
+            if len(args) == 2:
+                fnum = int(args[1])
+                print_title("backtrace frame %s" % fnum)
+                context_backtrace()
+
+            else:
+                print_title("backtrace")
+                context_backtrace()
+
+
+        if args[0] == "vim":
+            # TODO: open file in vim
+            return
+
+        
 
 CtxCommand()
