@@ -12,9 +12,9 @@ import pygments.lexers
 import gdb
 
 
-NUM_SOURCE_CODE_LINES_TO_SHOW = 10
+NUM_SOURCE_CODE_LINES_TO_SHOW = 50
 NUM_TTY_COLS = 80
-NUM_BACKTRACE_LINES = 30
+NUM_BACKTRACE_LINES = 1000
 NUM_ARG_PRINT_CHARS = 50
 
 LEFT_ARROW = " \u2190 "
@@ -156,7 +156,7 @@ signal.signal(signal.SIGWINCH, lambda signum, frame: gdb.execute("set width %i" 
 if 1:
     gdb.execute('set remote search-memory-packet off')
 
-gdb.execute("set prompt %s" % Color.redify("gdb$ "))
+gdb.execute("set prompt %s" % "gdb$$ ")
 
 
 ### ===Context  ===
@@ -267,20 +267,26 @@ def context_backtrace():
             
         pc = current_frame.pc()
         name = current_frame.name()
+        if len(name) > 70: name = name[:17] + "..." + name[-50:]
         fn = current_frame.function()
         items = []
 
         CUR_FRAME_POINTER = "->"
         items.append(CUR_FRAME_POINTER if this_frame == current_frame else " " * len(CUR_FRAME_POINTER))
-        items.append("[%s]" % Color.colorify("#%s" % i, "bold pink"))
+        items.append("[%2s]" % (i, ))
+
+        if fn: 
+            if this_frame == current_frame:
+                items.append(Color.colorify("%s:%s" % (fn.symtab.filename, fn.line), "underline cyan"))
+            else:
+                items.append(Color.cyanify("%s:%s" % (fn.symtab.filename, fn.line)))
 
         
         if this_frame == current_frame:
-            items.append(Color.colorify(name, "bold pink"))
+            items.append(Color.colorify(name, "underline"))
         else: 
             items.append(name)
 
-        if fn: items.append("%s:%s" % (fn.symtab.filename, fn.line))
         items.append("{:#x}".format(pc))
 
         frame_args = gdb.FrameDecorator.FrameDecorator(current_frame).frame_args() or []
@@ -288,14 +294,13 @@ def context_backtrace():
         print("%s" % (" ".join(items)))
 
         
-        args = []
-        for arg in frame_args:
-            # argval = str(arg.sym.value(current_frame))
-            args.append("%s %s" % (arg.sym.type, Color.boldify(str(arg.sym))))
-            # args.append(str(arg.sym.type))
-            # args.append(str(arg.sym))
-
-        print(' '*(len(CUR_FRAME_POINTER) + 2) +  "; ".join(args))
+        # args = []
+        # for arg in frame_args:
+        #     # argval = str(arg.sym.value(current_frame))
+        #     args.append("%s %s" % (arg.sym.type, str(arg.sym)))
+        #     # args.append(str(arg.sym.type))
+        #     # args.append(str(arg.sym))
+        # print(' '*(len(CUR_FRAME_POINTER) + 2) +  "; ".join(args))
 
         if current_frame == oldest_frame:
             break

@@ -170,10 +170,10 @@ zstyle ':completion:*' menu select
 ##!   alias hackernews=newsbeuter
 ##!   
 ##!   # Clipboard interactions
-##!   alias copyfile='xclip -selection clipboard'
-##!   alias pastefile='xclip -selection clipboard -o'
-##!   alias xcopy='xclip -selection clipboard'
-##!   alias xpaste='xclip -selection clipboard -o'
+alias copyfile='xclip -selection clipboard'
+alias pastefile='xclip -selection clipboard -o'
+alias xcopy='xclip -selection clipboard'
+alias xpaste='xclip -selection clipboard -o'
 ##!   
 ##!   export OPENSCADPATH=$OPENSCADPATH:/home/bollu/software/dotSCAD/src
 ##!   
@@ -187,6 +187,7 @@ zstyle ':completion:*' menu select
 ##!   # OPAM configuration
 ##!   # . /home/bollu/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
 
+# alias -g nvim=kak
 alias -g vim=nvim
 export LD_LIBRARY_PATH=$HOME/.local/lib/:$LD_LIBRARY_PATH
 export PATH=/home/bollu/.local/cmake-3.17.3-Linux-x86_64/bin:$PATH
@@ -196,8 +197,17 @@ export PATH=$HOME/.fzf/bin:$PATH
 alias seminar="google-chrome http://web2py.iiit.ac.in/seminar/default/upcoming"
 alias ss='import ~/ss.png'
 alias screenshot='import ~/ss.png'
-cat ~/urgent.md
+cat ~/o1.md
 
 $HOME/dotfiles/newword.sh 
 source ~/dotfiles/ghci-core.sh
-alias vim=kak
+
+export PATH=/home/bollu/work/mlir/llvm-project/build/bin:$PATH
+export PATH=/home/bollu/.local/go/bin:$PATH
+export PATH=/home/bollu/go/bin:$PATH
+# source $HOME/software/git-trac-command/enable.sh
+alias airgap="nmcli radio wifi off"
+alias unairgap="nmcli radio wifi on"
+# /home/bollu/software/elvish
+
+source /home/bollu/.config/broot/launcher/bash/br

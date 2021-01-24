@@ -1,8 +1,13 @@
-colorscheme github
-# colorscheme solarized-light
+# https://github.com/mawww/kakoune/blob/master/doc/pages/commands.asciidoc
+# https://github.com/mawww/kakoune/blob/master/doc/pages/expansions.asciidoc
+# https://github.com/mawww/kakoune/blob/master/doc/pages/mapping.asciidoc
+# https://github.com/mawww/kakoune/blob/master/doc/pages/commands.asciidoc
+# TODO: Allow C-u to move cursor up at beginning of page, as it
+# can at the end. Basically, assume we have ~~~~ at the *top* and the *bottom*
+# add-highlighter global/ number-lines -hlcursor -separator ' '
+colorscheme kaleidoscope-light
 
 # https://discuss.kakoune.com/t/sublime-text-style-multiple-cursor-select-add-mapping/150
-
 define-command -hidden -docstring \
 "select a word under cursor, or add cursor on next occurrence of current selection" \
 select-or-add-cursor %{
@@ -14,45 +19,43 @@ select-or-add-cursor %{
     } catch nop
 }
 
-map global normal '<s-d>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match" 
-map global normal '1' '<S-g>h'
-map global normal '$' '<S-g>l'
-map global normal '0' '<S-g>l'
-
+map global normal '<s-d>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
 
 # https://github.com/mawww/kakoune/wiki/Avoid-the-escape-key
 hook global InsertChar k %{ try %{
       exec -draft hH <a-k>jk<ret> d
         exec <esc>
-        # exec <space>
 }}
 
+hook global KakEnd .* %{ echo -to-file ~/.kak_history -quoting kakoune reg : %reg{:} }
+hook global KakBegin .* %{ try %{ source .kak_history } }
 
-# https://raw.githubusercontent.com/lenormf/out-of-the-box/master/oob.kak
+set global tabstop 2
+set global indentwidth 2
 
-# Indent the current selection with <tab>
-map global insert <tab> '<a-;><gt>'
-# De-indent the current selection with <s-tab>
-map global insert <s-tab> '<a-;><lt>'
-
-# Allow cycling to the next/previous candidate with <tab> and <s-tab> when completing a word
-hook global InsertCompletionShow .* %{
-    try %{
-        execute-keys -draft 'h<a-K>\h<ret>'
-        map window insert <tab> <c-n>
-        map window insert <s-tab> <c-p>
-    }
+# Plugins
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "kak-lsp/kak-lsp" do %{
+  cargo install --locked --force --path .
 }
-hook global InsertCompletionHide .* %{
-    unmap window insert <tab> <c-n>
-    unmap window insert <s-tab> <c-p>
-}
+
+# LSP
+lsp-enable
+set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+
+# <a-e> to go to definition
+map global normal <a-e> ': lsp-definition<ret>vv'
+# <a-w> and <a-q> for prev and next location
+map global normal <a-w> '<c-o>vv'
+map global normal <a-s-w> '<tab>vv'
+
+# tab, ctrl-tab, ctrl-w for next, prev, close buffer
+map global normal <tab> ': buffer-next<ret>'
+map global normal <s-tab> ': buffer-previous<ret>'
+map global normal <c-w> ': delete-buffer<ret>'
 
 # Display line numbers in all newly created windows
 add-highlighter global/ number-lines
-
-# Underline search matches in all newly created windows
-add-highlighter global/ dynregex '%reg{/}' 0:+u
 
 # Minimal set of readline mappings
 map -docstring "move the cursor to the start of the line"        global insert <c-a> '<a-;>gh'
@@ -64,18 +67,16 @@ map -docstring "delete until the next word boundary"             global insert <
 map -docstring "delete until the previous word boundary"         global insert <c-w> '<esc>bc'
 map -docstring "paste before the cursor"                         global insert <c-y> '<esc>Pi'
 
-# Set of mappings to copy/paste data to/from the system clipboard
-define-command -hidden oob-clipboard-copy %{
-    execute-keys <a-|> %sh{
-        if command -v xsel >/dev/null; then
-            printf 'xsel -ib'
-        elif command -v xclip >/dev/null; then
-            printf 'xclip -i'
-        elif command -v pbcopy >/dev/null; then
-            printf 'pbcopy'
-        fi
-    } <ret>
-}
+map -docstring "move the cursor to the start of the line"        global normal <c-a> 'gh'
+map -docstring "move the cursor to the end of the line"          global normal <c-e> 'gll'
+# map -docstring "delete the character under the anchor"           global normal <c-d> 'c'
+map -docstring "delete from the cursor to the start of the line" global normal <c-u> 'h<a-h>d'
+map -docstring "delete from the cursor to the end of the line"   global normal <c-k> '<a-l>d'
+map -docstring "delete until the next word boundary"             global normal <a-d> '<esc>ed'
+map -docstring "delete until the previous word boundary"         global normal <c-w> 'bd'
+map -docstring "paste before the cursor"                         global normal <c-y> 'P'
+
+
 define-command -hidden oob-clipboard-paste-before %{
     execute-keys ! %sh{
         if command -v xsel >/dev/null; then
@@ -86,6 +87,7 @@ define-command -hidden oob-clipboard-paste-before %{
             printf 'pbpaste'
         fi
     } <ret>
+
 }
 define-command -hidden oob-clipboard-paste-after %{
     execute-keys <a-!> %sh{
@@ -97,10 +99,15 @@ define-command -hidden oob-clipboard-paste-after %{
             printf 'pbpaste'
         fi
     } <ret>
+
 }
-map -docstring "copy the current selection to the system clipboard" global user y ': oob-clipboard-copy<ret>'
-map -docstring "paste data from the system clipboard before the selection" global user P ': oob-clipboard-paste-before<ret>'
-map -docstring "paste data from the system clipboard after the selection" global user p ': oob-clipboard-paste-after<ret>'
+
+map global user y '<a-|>xsel -i -b<ret>'
+map global user p '!xsel  -o -p<ret>'
 
 
- 
+define-command line -params 1 %{
+   execute-keys %arg[1] g 
+}
+
+

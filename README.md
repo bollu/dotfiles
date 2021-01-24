@@ -7,3 +7,10 @@
 # For i3 + Retina
 
 use `GDK_SCALE=2` in `~/.profile` and `~/.bashrc`
+
+# Terminal setup
+
+- `broot`
+- `elvish`
+- `ag`
+- `fzf`

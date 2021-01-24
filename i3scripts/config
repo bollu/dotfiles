@@ -20,8 +20,9 @@ set $mod Mod4
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 10
-
+# font pango:DejaVu Sans Mono 10
+font pango:Iosevka Fixed Expanded 12
+font pango:Px437 ToshibaSat 8x14 14
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -34,7 +35,7 @@ floating_modifier $mod
 
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec /home/bollu/software/alacritty
+bindsym $mod+Return exec /home/bollu/.local/bin/kitty
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -164,25 +165,26 @@ bar {
         status_command i3status
         tray_output primary
         colors {
-            background #263238
-            statusline #ffffff
-            separator  #ffffff
+            background #EEEEEE
+            statusline #546E7A
+            separator  #000000
 
             # selected and on current monitor
-            focused_workspace  #ffffff #0288D1 #FFFFFF 
+            # border color inner color font color
+            focused_workspace  #000000 #EC407A #ffffff
             # selected but on differen monitor
-            active_workspace   #ffffff #222222 #FFFFFF
-            inactive_workspace #333333 #222222 #888888
-            urgent_workspace   #2F343A #900000 #FFFFFF
-            binding_mode       #2F343A #900000 #FFFFFF
+            active_workspace   #000000 #222222 #FFFFFF
+            inactive_workspace #000000 #bbbbbb #888888
+            urgent_workspace   #000000 #900000 #FFFFFF
+            binding_mode       #000000 #900000 #FFFFFF
         }
 
 }
 
 # Background
 # exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/shortcuts.png
-# exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/great-wave.jpg
-exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/kakoune.png
+exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/swirls.jpg
+# exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/kakoune.png
 
 # Make Caps Lock a Control key
 exec --no-startup-id setxkbmap -option ctrl:nocaps
@@ -210,3 +212,21 @@ bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN
 
 exec /usr/libexec/gnome-settings-daemon
 for_window [class="lighthouse"  instance="lighthouse"] float enable
+
+exec --no-startup-id picom -b
+
+
+# class                 border  backgr. text    indicator child_border
+# child_border: active window border
+client.focused          #ffffff #ffffff #ffffff #ffffff   #039BE5
+# client.focused_inactive #00ff00 #5f676a #ffffff #484e50   #00ff00
+client.unfocused        #00ff00 #222222 #888888 #292d2e   #000000
+# client.urgent           #2f343a #900000 #ffffff #900000   #900000
+# client.placeholder      #000000 #0c0c0c #ffffff #000000   #3949AB
+# client.background       #ffffff
+
+
+
+gaps inner 5
+gaps outer 5
+for_window [class="^.*"] border pixel 6

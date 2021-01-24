@@ -1,6 +1,6 @@
 {
     "C_Cpp.updateChannel": "Insiders",
-    "window.zoomLevel": 0,
+    "window.zoomLevel": -1,
     "cmake.configureOnOpen": true,
     "editor.rulers": [
         80,
@@ -10,10 +10,10 @@
     "workbench.colorTheme": "Visual Studio Light",
     "editor.minimap.enabled": false,
     "[cpp]": {
-        "editor.wordBasedSuggestions": false,
-        "editor.suggest.insertMode": "replace",
+        "editor.wordBasedSuggestions": true,
+        "editor.suggest.insertMode": "insert",
         "editor.semanticHighlighting.enabled": true
     },
-    "editor.formatOnSave": true
-
+    "extensions.ignoreRecommendations": true,
+    "editor.suggest.insertMode": "insert"
 }
