@@ -7,13 +7,14 @@ set PATH /home/bollu/.fzf/bin $PATH
 set PATH /home/bollu/work/mlir/llvm-project/build/bin $PATH
 set PATH /home/bollu/.local/go/bin $PATH
 set PATH /home/bollu/go/bin $PATH
+set PATH /home/bollu/work/mlir/lean4/build/release/stage2/bin $PATH
 
 # LLVM paths
 set PATH /home/bollu/work/mlir/llvm-project/build/bin/ $PATH
 set LD_LIBRARY_PATH /home/bollu/work/mlir/llvm-project/build/lib $LD_LIBRARY_PATH
 set C_INCLUDE_PATH /home/bollu/work/mlir/llvm-project/build/include/ $C_INCLUDE_PATH
 
-alias vim=nvim
+#alias vim=nvim
 alias ss='import ~/ss.png'
 alias screenshot='import ~/ss.png'
 
@@ -44,3 +45,4 @@ cat /home/bollu/o1.md
 alias airgap="nmcli radio wifi off"
 alias unairgap="nmcli radio wifi on"
 alias pwncollege="ssh cse466@cse466.pwn.college"
+

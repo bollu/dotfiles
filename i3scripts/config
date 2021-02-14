@@ -21,8 +21,9 @@ set $mod Mod4
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 # font pango:DejaVu Sans Mono 10
-font pango:Iosevka Fixed Expanded 12
 font pango:Px437 ToshibaSat 8x14 14
+font pango:Iosevka Fixed Expanded 12
+font pango:Meslo LG L DZ for Powerline 10
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -35,7 +36,8 @@ floating_modifier $mod
 
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec /home/bollu/.local/bin/kitty
+# bindsym $mod+Return exec /home/bollu/software/neovide/target/release/neovide
+bindsym $mod+Return exec /home/bollu/.local/bin/kitty fish
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -165,16 +167,16 @@ bar {
         status_command i3status
         tray_output primary
         colors {
-            background #EEEEEE
-            statusline #546E7A
-            separator  #000000
+            background #ffffff
+            separator  #ffffff
+            statusline #000000
 
             # selected and on current monitor
             # border color inner color font color
-            focused_workspace  #000000 #EC407A #ffffff
+            focused_workspace  #FFFFFF #000000 #ffffff
             # selected but on differen monitor
-            active_workspace   #000000 #222222 #FFFFFF
-            inactive_workspace #000000 #bbbbbb #888888
+            active_workspace   #FFFFFF #000000 #FFFFFF
+            inactive_workspace #e7e5e2 #e7e5e2 #000000
             urgent_workspace   #000000 #900000 #FFFFFF
             binding_mode       #000000 #900000 #FFFFFF
         }
@@ -183,7 +185,10 @@ bar {
 
 # Background
 # exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/shortcuts.png
-exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/swirls.jpg
+#exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/lanes.png
+# exec --no-startup-id nitrogen --set-scaled /home/bollu/Pictures/city-2.jpeg
+# exec --no-startup-id nitrogen --set-scaled /home/bollu/Pictures/neon.png
+exec --no-startup-id nitrogen --set-scaled /home/bollu/Pictures/nadeko.png
 # exec --no-startup-id nitrogen --set-zoom /home/bollu/Pictures/kakoune.png
 
 # Make Caps Lock a Control key
@@ -216,17 +221,24 @@ for_window [class="lighthouse"  instance="lighthouse"] float enable
 exec --no-startup-id picom -b
 
 
+# These are all top bar settings
+# ==============================
 # class                 border  backgr. text    indicator child_border
 # child_border: active window border
-client.focused          #ffffff #ffffff #ffffff #ffffff   #039BE5
-# client.focused_inactive #00ff00 #5f676a #ffffff #484e50   #00ff00
-client.unfocused        #00ff00 #222222 #888888 #292d2e   #000000
+# vvv focused window
+# client.focused            #ffffff #ffffff #000000 #000000   #ffffff
+client.unfocused            #ffffff #ffffff #cccccc #000000   #ffffff
+client.focused              #ffffff #ffffff #000000 #000000   #ffffff
+# vvv unfocued window in a split window
+# client.unfocused          #263238 #263238 #777777 #292d2e   #aaaaaa 
+# client.unfocused            #bbbbbb #bbbbbb #222222 #cccccc   #bbbbbb
+# client.focused_inactive #00ff00 #5f676a #ffffff #484e50   #546E7A
 # client.urgent           #2f343a #900000 #ffffff #900000   #900000
 # client.placeholder      #000000 #0c0c0c #ffffff #000000   #3949AB
 # client.background       #ffffff
 
 
 
-gaps inner 5
-gaps outer 5
-for_window [class="^.*"] border pixel 6
+gaps inner 10
+gaps outer 0
+for_window [class="^.*"] border pixel 0
