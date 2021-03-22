@@ -37,8 +37,8 @@ let g:colors_name="C64"
 " Editor settings
 " --------------------------------
 
-hi Normal          guifg=#cecece    guibg=#4242c6    guisp=#4242c6    gui=NONE    ctermfg=252 ctermbg=62    cterm=NONE
-hi Cursor          guifg=NONE    guibg=#9c9cf7    guisp=#9c9cf7    gui=NONE    ctermfg=NONE ctermbg=147    cterm=NONE
+hi Normal          guifg=#cecece    guibg=#4242c6    guisp=#4242c6    gui=NONE    ctermfg=15 ctermbg=62    cterm=NONE
+hi Cursor          guifg=#cecece    guibg=#4242c6    guisp=#4242c6    gui=NONE    ctermfg=15 ctermbg=62    cterm=NONE
 hi CursorLine      guifg=NONE    guibg=NONE    guisp=NONE    gui=NONE    ctermfg=NONE ctermbg=NONE    cterm=NONE
 hi LineNr          guifg=#4242c6    guibg=#9c9cf7    guisp=#9c9cf7    gui=NONE    ctermfg=62 ctermbg=147    cterm=NONE
 hi CursorLineNR    guifg=#ffffff    guibg=#9c9cf7    guisp=#9c9cf7    gui=NONE    ctermfg=15 ctermbg=147    cterm=NONE
@@ -82,7 +82,7 @@ hi MoreMsg         guifg=#ffffff    guibg=NONE    guisp=NONE    gui=NONE    cter
 " --------------
 " - Visual aid -
 " --------------
-hi MatchParen      guifg=#4242c6    guibg=#9c9cf7   guisp=#9c9cf7    gui=NONE    ctermfg=62 ctermbg=147    cterm=NONE
+hi MatchParen      guifg=#4242c6    guibg=#9c9cf7   guisp=#9c9cf7    gui=NONE    ctermfg=15 ctermbg=16    cterm=NONE
 hi Visual          guifg=NONE    guibg=#7b7b7b    guisp=#7b7b7b    gui=NONE    ctermfg=NONE ctermbg=8    cterm=NONE
 hi VisualNOS       guifg=NONE    guibg=#bd6bbd    guisp=#bd6bbd    gui=NONE    ctermfg=NONE ctermbg=133    cterm=NONE
 hi NonText         guifg=#7b7b7b    guibg=NONE    guisp=NONE    gui=NONE    ctermfg=8 ctermbg=NONE    cterm=NONE
