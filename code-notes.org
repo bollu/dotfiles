@@ -1,0 +1,32 @@
+* code
+** [[file:///home/bollu/dotfiles/.emacs::318][/home/bollu/dotfiles/.emacs - bar ba]]
+ Created On: [2021-04-24 Sat 10:52]
+ #+BEGIN_SRC
+
+ (defun htmlize-with-line-numbers ()
+   (interactive)
+   (goto-char (point-min))
+   (let ((n 1))
+     (while (not (eobp))
+       (htmlize-make-tmp-overlay (point) (point) `(before-string ,(format "%4d " n)))
+       (setq n (1+ n))
+       (forward-line 1)))
+   (switch-to-buffer (htmlize-buffer)))
+
+ #+END_SRC
+** [[file:///home/bollu/dotfiles/.emacs::335][/home/bollu/dotfiles/.emacs - ]]
+ Created On: [2021-04-24 Sat 10:48]
+ #+BEGIN_SRC
+
+ (define-key global-map (kbd "C-c C-c")
+   (lambda () (interactive) (org-capture nil "c")))
+
+ #+END_SRC
+** [[file:///home/bollu/dotfiles/.emacs::338][/home/bollu/dotfiles/.emacs - foo]]
+ Created On: [2021-04-24 Sat 10:51]
+ #+BEGIN_SRC
+
+ (define-key global-map (kbd "C-c C-d")
+   (lambda () (interactive) (find-file "~/dotfiles/code-notes.org")))
+
+ #+END_SRC
