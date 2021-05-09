@@ -19,15 +19,70 @@
 (defalias 'ff 'find-file) ;; nice for use within eshell
 
 
+;; LONG LINES: https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
+(global-so-long-mode)
+
+;; HELP
+(global-set-key [f1]   'help-command)
+
+;; GEISER FOR SCHEME
+;; (straight-use-package 'geiser)
+
+;; RAINBOW DELIMITER
+(straight-use-package 'rainbow-delimiters)
+
+;; SBCL / COMMON LISP
+(straight-use-package 'slime)
+(add-hook 'slime-mode-hook
+  (lambda ()
+     (local-set-key (kbd "C-c C-?") 'slime-documentation-lookup)
+     (local-set-key (kbd "C-c ?") 'slime-documentation-lookup)
+     (local-set-key (kbd "C-\\") 'slime-fuzzy-complete-symbol)
+     (local-set-key (kbd "C-c p") 'slime-selector)
+     (local-set-key (kbd "C-c C-p") 'slime-selector)
+     (local-set-key (kbd "C-c P") 'slime-selector)
+     (local-set-key (kbd "C-c C-p") 'slime-selector)
+     (local-set-key (kbd "C-c o") 'slime-selector)
+     (local-set-key (kbd "C-c O") 'slime-selector)
+     (local-set-key (kbd "C-c C-O") 'slime-selector)
+     (local-set-key (kbd "C-c o") 'slime-selector)
+     (local-set-key (kbd "C-c C-o") 'slime-selector)
+     (local-set-key (kbd "C-x C-r") 'slime-eval-defun) ;; re-evaluate
+     (rainbow-delimiters-mode)
+     (lispy-mode)))
+
+
+(add-hook 'lisp-mode-hook
+	  '(lambda ()
+	     (unless (get-process "SLIME Lisp")
+	       (progn (lispy-mode) (slime) (slime-sync-package-and-default-directory)))))
+
+(setq slime-net-coding-system 'utf-8-unix)
+(setq inferior-lisp-program "sbcl")
+(setq initial-major-mode 'lisp-mode)
+
+;; SLY
+;; (straight-use-package 'sly)
+;; (defun sly-add-keys ()
+;;     (local-set-key (kbd "C-p") sly-selector-map))
+;; (add-hook 'sly-mode-hook 'sly-add-keys)
+;; (setq inferior-lisp-program "sbcl") 
+
+;; LISPY
+(straight-use-package 'lispy)
+
+
+
 ;; LEAN packages
 (straight-use-package 'dash)
 (straight-use-package 'flycheck)
 (straight-use-package 's)
+
+
 ;; TODO: write a new shell for yourself using comint-mode
 (straight-use-package 'ctrlf)
 (straight-use-package 'htmlize)
 (straight-use-package 'almost-mono-themes)
-(straight-use-package 'parinfer)
 (straight-use-package 'prescient)
 (straight-use-package 'selectrum)
 (straight-use-package 'selectrum-prescient)
@@ -40,13 +95,13 @@
 (straight-use-package 'lsp-ui)
 (straight-use-package 'cider)
 (straight-use-package 'auctex)
-(straight-use-package 'undo-tree)
 ;; (straight-use-package 'lean-mode)
 (straight-use-package 'bury-successful-compilation) ;; close compile window on success
 (straight-use-package 'popwin)
 (straight-use-package 'monokai-theme)
 (straight-use-package 'clang-format+)
 (straight-use-package 'selectric-mode)
+(straight-use-package 'zig-mode)
 
 ;; AGDA
 (load-file (let ((coding-system-for-read 'utf-8))
@@ -54,6 +109,7 @@
 
 ;; CLANG
 (add-hook 'c-mode-common-hook #'clang-format+-mode)
+
 
 ;; LEAN
 (setq load-path (cons "/home/bollu/work/lean4/lean4-mode" load-path))
@@ -65,23 +121,19 @@
 ;; (straight-use-package 'auto-complete) ;; TODO: write custom source for completion-at-point.
 ;; (straight-use-package 'company-lean)
 
-;; (straight-use-package 'evil)
-;; smartparens
-;; undo-tree
-;; (require 'popwin)
-
-;; allow completion-at-point to be trigged with <TAB>
-
-
 ;; (add-hook 'text-mode-hook 'foo-mode bury-successful-compilation)
+(straight-use-package 'undo-tree)
 (global-undo-tree-mode) ;; undo-tree
 
+;; PARINFER
+;; (straight-use-package 'parinfer)
+;; (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+;; (add-hook 'clojure-mode-hook #'parinfer-mode)
+;; (add-hook 'lisp-mode-hook #'parinfer-mode)
+;; ;; (setq parinfer-auto-switch-indent-mode t) 
 
-(add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
-(add-hook 'clojure-mode-hook #'parinfer-mode)
-(setq parinfer-auto-switch-indent-mode t) 
-
-(load-theme 'almost-mono-white t)
+;; (load-theme 'almost-mono-white t)
+(load-theme 'leuven t)
 (selectrum-mode)
 (selectrum-prescient-mode)
 (prescient-persist-mode +1)
@@ -96,6 +148,9 @@
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
 ;; (define-key lsp-mode-map (kbd "C-x l") lsp-command-map)
+
+(setq lsp-zig-zls-executable "/usr/bin/zls")
+
 
 
 ;; mnemonic: C-p is to find stuff. d is for definition
@@ -119,6 +174,10 @@
 (global-set-key (kbd "C-\\") 'completion-at-point)
 
 (global-set-key (kbd "C-9") 'compile)
+(global-set-key (kbd "C-x C-9") 'compile)
+(global-set-key (kbd "C-c C-9") 'compile)
+(global-set-key (kbd "C-c 9") 'compile)
+(global-set-key (kbd "C-x 9") 'compile)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'cpp-mode-hook 'lsp) 
 (setq gc-cons-threshold (* 100 1024 1024)
