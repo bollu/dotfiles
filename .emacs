@@ -28,48 +28,89 @@
 ;; GEISER FOR SCHEME
 ;; (straight-use-package 'geiser)
 
+;; EXPAND REGION
+(straight-use-package 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "C--") 'er/contract-region) 
+(global-set-key (kbd "C-c C-=") 'er/expand-region)
+(global-set-key (kbd "C-c C--") 'er/contract-region)
+
+
 ;; RAINBOW DELIMITER
 (straight-use-package 'rainbow-delimiters)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
+
 
 ;; SBCL / COMMON LISP
-(straight-use-package 'slime)
-(add-hook 'slime-mode-hook
-  (lambda ()
-     (local-set-key (kbd "C-c C-?") 'slime-documentation-lookup)
-     (local-set-key (kbd "C-c ?") 'slime-documentation-lookup)
-     (local-set-key (kbd "C-\\") 'slime-fuzzy-complete-symbol)
-     (local-set-key (kbd "C-c p") 'slime-selector)
-     (local-set-key (kbd "C-c C-p") 'slime-selector)
-     (local-set-key (kbd "C-c P") 'slime-selector)
-     (local-set-key (kbd "C-c C-p") 'slime-selector)
-     (local-set-key (kbd "C-c o") 'slime-selector)
-     (local-set-key (kbd "C-c O") 'slime-selector)
-     (local-set-key (kbd "C-c C-O") 'slime-selector)
-     (local-set-key (kbd "C-c o") 'slime-selector)
-     (local-set-key (kbd "C-c C-o") 'slime-selector)
-     (local-set-key (kbd "C-x C-r") 'slime-eval-defun) ;; re-evaluate
-     (rainbow-delimiters-mode)
-     (lispy-mode)))
-
-
-(add-hook 'lisp-mode-hook
-	  '(lambda ()
-	     (unless (get-process "SLIME Lisp")
-	       (progn (lispy-mode) (slime) (slime-sync-package-and-default-directory)))))
-
-(setq slime-net-coding-system 'utf-8-unix)
-(setq inferior-lisp-program "sbcl")
-(setq initial-major-mode 'lisp-mode)
+;; (straight-use-package 'slime)
+;; (add-hook 'slime-mode-hook
+;;   (lambda ()
+;;      (local-set-key (kbd "C-c C-?") 'slime-documentation-lookup)
+;;      (local-set-key (kbd "C-c ?") 'slime-documentation-lookup)
+;;      (local-set-key (kbd "C-\\") 'slime-fuzzy-complete-symbol)
+;;      (local-set-key (kbd "C-c p") 'slime-selector)
+;;      (local-set-key (kbd "C-c C-p") 'slime-selector)
+;;      (local-set-key (kbd "C-c P") 'slime-selector)
+;;      (local-set-key (kbd "C-c C-p") 'slime-selector)
+;;      (local-set-key (kbd "C-c o") 'slime-selector)
+;;      (local-set-key (kbd "C-c O") 'slime-selector)
+;;      (local-set-key (kbd "C-c C-O") 'slime-selector)
+;;      (local-set-key (kbd "C-c o") 'slime-selector)
+;;      (local-set-key (kbd "C-c C-o") 'slime-selector)
+;;      (local-set-key (kbd "C-x C-r") 'slime-eval-defun)
+;;      (rainbow-delimiters-mode)
+;;      (lispy-mode)))
+;; (defun bollu/lispenv ()  (interactive)
+;;    (unless (get-process "SLIME Lisp")
+;;      (progn (lispy-mode) (slime) (slime-sync-package-and-default-directory))))
+;; (setq slime-net-coding-system 'utf-8-unix)
+;; (setq inferior-lisp-program "sbcl")
+;; (setq initial-major-mode 'lisp-mode)
 
 ;; SLY
-;; (straight-use-package 'sly)
-;; (defun sly-add-keys ()
-;;     (local-set-key (kbd "C-p") sly-selector-map))
-;; (add-hook 'sly-mode-hook 'sly-add-keys)
-;; (setq inferior-lisp-program "sbcl") 
+(straight-use-package 'sly)
+(defun sly-add-keys ()
+    (local-set-key (kbd "C-p") sly-selector-map))
+(add-hook 'sly-mode-hook 'sly-add-keys)
+(add-hook 'sly-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-x C-k") 'sly-compile-file)
+	    (local-set-key (kbd "C-x k") 'sly-compile-file)))
+(add-hook 'sly-mode-hook
+          (lambda ()
+            (unless (sly-connected-p)
+              (save-excursion (sly)))))
+(setq inferior-lisp-program "sbcl")
 
+
+(add-hook 'lisp-mode-hook (lambda ()
+			    (progn (lispy-mode)
+				   (rainbow-delimiters-mode))))
 ;; LISPY
 (straight-use-package 'lispy)
+(straight-use-package 'paredit)
+
+;; ELISP MODE
+(add-hook 'elisp-mode-hook
+	  (lambda ()
+	    (lispy-mode)
+	    (rainbow-delimiters-mode)
+	    (local-set-key "C-c C-k" 'eval-buffer)
+	    (local-set-key "C-c C-e" 'eval-last-sexp)
+	    (local-set-key "C-x C-e" 'eval-last-sexp)
+	    (local-set-key "C-x C-k" 'eval-buffer)))
 
 
 
@@ -133,7 +174,7 @@
 ;; ;; (setq parinfer-auto-switch-indent-mode t) 
 
 ;; (load-theme 'almost-mono-white t)
-(load-theme 'leuven t)
+(load-theme 'wombat t)
 (selectrum-mode)
 (selectrum-prescient-mode)
 (prescient-persist-mode +1)
@@ -238,8 +279,11 @@
 (global-set-key (kbd "C-c :") 'goto-line)
 (global-set-key (kbd "C-x :") 'goto-line)
 (global-set-key (kbd "C-:") 'goto-line)
-(global-set-key (kbd "C-;") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c C-;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c /") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c C-/") 'comment-or-uncomment-region)
+
 ;; (global-set-key (kbd "C-u") 'undo-tree-undo)
 
 (global-auto-revert-mode t) ;; auto load changed buffers on disk that don't have local unsaved data
