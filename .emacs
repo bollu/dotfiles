@@ -18,6 +18,8 @@
 (exec-path-from-shell-copy-env "PATH")
 (defalias 'ff 'find-file) ;; nice for use within eshell
 
+;; HASKELL
+(straight-use-package 'haskell-mode)
 
 ;; LONG LINES: https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
 (global-so-long-mode)
@@ -32,8 +34,9 @@
 (straight-use-package 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 (global-set-key (kbd "C--") 'er/contract-region) 
-(global-set-key (kbd "C-c C-=") 'er/expand-region)
-(global-set-key (kbd "C-c C--") 'er/contract-region)
+;; (global-set-key (kbd "C-c C-=") 'er/expand-region)
+;; (global-set-key (kbd "C-c C--") 'er/contract-region)
+
 
 
 ;; RAINBOW DELIMITER
@@ -124,6 +127,8 @@
 (straight-use-package 'ctrlf)
 (straight-use-package 'htmlize)
 (straight-use-package 'almost-mono-themes)
+(straight-use-package 'borland-blue-theme)
+
 (straight-use-package 'prescient)
 (straight-use-package 'selectrum)
 (straight-use-package 'selectrum-prescient)
@@ -175,6 +180,7 @@
 
 ;; (load-theme 'almost-mono-white t)
 (load-theme 'wombat t)
+;; (load-theme 'borland-blue t)
 (selectrum-mode)
 (selectrum-prescient-mode)
 (prescient-persist-mode +1)
@@ -236,11 +242,17 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq vc-follow-symlinks t)
+;; (set-face-attribute 'default nil
+;;                     :family "Mx437 Nix8810 M15"
+;;                     :height 180
+;;                     :weight 'normal
+;;                    :width  'normal)
 (set-face-attribute 'default nil
                     :family "mononoki"
-                    :height 110
+                    :height 130
                     :weight 'normal
                     :width  'normal)
+
 (global-set-key (kbd "<C-tab>") 'next-buffer)
 (global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
 (global-set-key (kbd "C-x C-b") 'switch-to-buffer)
