@@ -1,6 +1,5 @@
 ;; eshell set paths
 
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -20,6 +19,7 @@
 
 ;; HASKELL
 (straight-use-package 'haskell-mode)
+;; (add-hook ’haskell-mode-hook ’interactive-haskell-mode)
 
 ;; LONG LINES: https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
 (global-so-long-mode)
@@ -27,8 +27,6 @@
 ;; HELP
 (global-set-key [f1]   'help-command)
 
-;; GEISER FOR SCHEME
-;; (straight-use-package 'geiser)
 
 ;; EXPAND REGION
 (straight-use-package 'expand-region)
@@ -82,15 +80,25 @@
 ;; (setq inferior-lisp-program "sbcl")
 ;; (setq initial-major-mode 'lisp-mode)
 
+;; RACKET-MODE
+(straight-use-package 'racket-mode)
+;; GEISER
+(straight-use-package 'geiser)
+(straight-use-package 'geiser-chicken)
+(setq geiser-racket-binary (executable-find "chicken-csi"))
+
+
+
 ;; SLY
+
 (straight-use-package 'sly)
 (defun sly-add-keys ()
     (local-set-key (kbd "C-p") sly-selector-map))
 (add-hook 'sly-mode-hook 'sly-add-keys)
 (add-hook 'sly-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-x C-k") 'sly-compile-file)
-	    (local-set-key (kbd "C-x k") 'sly-compile-file)))
+      (lambda ()
+          (local-set-key (kbd "C-x C-k") 'sly-compile-file)
+          (local-set-key (kbd "C-x k") 'sly-compile-file)))
 (add-hook 'sly-mode-hook
           (lambda ()
             (unless (sly-connected-p)
@@ -99,21 +107,21 @@
 
 
 (add-hook 'lisp-mode-hook (lambda ()
-			    (progn (lispy-mode)
-				   (rainbow-delimiters-mode))))
+                           (progn (lispy-mode)
+                                  (rainbow-delimiters-mode))))
 ;; LISPY
 (straight-use-package 'lispy)
 (straight-use-package 'paredit)
 
 ;; ELISP MODE
 (add-hook 'elisp-mode-hook
-	  (lambda ()
-	    (lispy-mode)
-	    (rainbow-delimiters-mode)
-	    (local-set-key "C-c C-k" 'eval-buffer)
-	    (local-set-key "C-c C-e" 'eval-last-sexp)
-	    (local-set-key "C-x C-e" 'eval-last-sexp)
-	    (local-set-key "C-x C-k" 'eval-buffer)))
+      (lambda ()
+          (lispy-mode)
+          (rainbow-delimiters-mode)
+          (local-set-key "C-c C-k" 'eval-buffer)
+          (local-set-key "C-c C-e" 'eval-last-sexp)
+          (local-set-key "C-x C-e" 'eval-last-sexp)
+          (local-set-key "C-x C-k" 'eval-buffer)))
 
 
 
@@ -121,10 +129,13 @@
 (straight-use-package 'dash)
 (straight-use-package 'flycheck)
 (straight-use-package 's)
+(straight-use-package 'dash)
 
 
 ;; TODO: write a new shell for yourself using comint-mode
 (straight-use-package 'ctrlf)
+(straight-use-package 'dracula-theme)
+(straight-use-package 'badwolf-theme)
 (straight-use-package 'htmlize)
 (straight-use-package 'almost-mono-themes)
 (straight-use-package 'borland-blue-theme)
@@ -145,16 +156,16 @@
 (straight-use-package 'bury-successful-compilation) ;; close compile window on success
 (straight-use-package 'popwin)
 (straight-use-package 'monokai-theme)
-(straight-use-package 'clang-format+)
 (straight-use-package 'selectric-mode)
 (straight-use-package 'zig-mode)
+
+;; clang-format
+(setq clang-format-style-option "llvm")
+(setq clang-format+-always-enable "llvm")
 
 ;; AGDA
 (load-file (let ((coding-system-for-read 'utf-8))
                 (shell-command-to-string "agda-mode locate")))
-
-;; CLANG
-(add-hook 'c-mode-common-hook #'clang-format+-mode)
 
 
 ;; LEAN
@@ -179,8 +190,17 @@
 ;; ;; (setq parinfer-auto-switch-indent-mode t) 
 
 ;; (load-theme 'almost-mono-white t)
-(load-theme 'wombat t)
 ;; (load-theme 'borland-blue t)
+(straight-use-package 'gruvbox-theme)
+(straight-use-package 'afternoon-theme)
+(straight-use-package 'flatui-theme)
+(straight-use-package 'twilight-bright-theme)
+
+
+;; (load-theme 'gruvbox t)
+;; (load-theme 'twilight-bright t)
+(load-theme 'badwolf t)
+
 (selectrum-mode)
 (selectrum-prescient-mode)
 (prescient-persist-mode +1)
@@ -242,19 +262,28 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq vc-follow-symlinks t)
-;; (set-face-attribute 'default nil
-;;                     :family "Mx437 Nix8810 M15"
-;;                     :height 180
-;;                     :weight 'normal
-;;                    :width  'normal)
+
 (set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height 130
+                    :family "Mx437 Nix8810 M15"
+                    :height 100
+                    :weight 'normal)
+
+
+(set-face-attribute 'default nil
+                    :family "Meslo LG S DZ for Powerline"
+                    :height 100
                     :weight 'normal
                     :width  'normal)
 
-(global-set-key (kbd "<C-tab>") 'next-buffer)
-(global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
+(set-face-attribute 'default nil
+                    :family "mononoki"
+                    :height 130
+                    :weight 'bold
+                    :width  'normal)
+
+
+(global-set-key (kbd "<C-tab>") 'switch-to-buffer)
+(global-set-key (kbd "<C-iso-lefttab>") 'switch-to-buffer)
 (global-set-key (kbd "C-x C-b") 'switch-to-buffer)
 (global-set-key (kbd "C-x C-o") 'other-window)
 (setq compilation-scroll-output 'first-error)
@@ -377,6 +406,7 @@
 ;; load back.el
 ;; (load-file "/home/bollu/.emacs.d/back.el")
 
+
 ;; go to previous location
 (defun xah-pop-local-mark-ring ()
   "Move cursor to last mark position of current buffer.
@@ -451,9 +481,20 @@ Version 2016-04-04"
 (define-key global-map (kbd "C-c C-d")
   (lambda () (interactive) (find-file "~/dotfiles/code-notes.org")))
 
+;; SAGE config
+(add-to-list 'auto-mode-alist '("\\.sage\\'" . python-mode))
+;; CUBICALTT
+;; (load-file "/home/bollu/work/cubicaltt/cubicaltt.el")
+;; (load-file "/home/bollu/work/minitt/stlc.el")
 
-;; wipe all keybinds
-;; (Use-global-map (make-sparse-keymap))
+;; LLVM
+(setq load-path
+  (cons (expand-file-name "/home/bollu/work/llvm-project/llvm/utils/emacs") load-path))
+(require 'llvm-mode)
+
+;; disable ALL KEYS
+;; https://emacs.stackexchange.com/questions/3870/how-to-truly-unbind-all-global-keybinds
+;; (use-global-map (make-sparse-keymap))
 ;; (global-set-key [t] #'self-insert-command)
 ;; (let ((c ?\s))
 ;;   (while (< c ?\d)
@@ -468,9 +509,137 @@ Version 2016-04-04"
 ;;   (while (< c 256)
 ;;     (global-set-key (vector c) #'self-insert-command)
 ;;     (setq c (1+ c))))
+;; 
 ;; (global-set-key (kbd "C-x C-f") 'find-file)
-;; (global-set-key (kbd "C-x C-f") 'find-file)
-;; (global-set-key (kbd "ENTER") 'ret)
+;; (global-set-key (kbd "C-x C-s") 'save-buffer)
+;; (global-set-key (kbd "<return>") 'newline)
+;; (global-set-key (kbd "<RET>") 'newline)
+;; (global-set-key (kbd "C-x C-c") 'save-buffers-kill-terminal)
+;; (global-set-key (kbd "<backspace>") 'backward-delete-char-untabify)
+;; (global-set-key (kbd "<up>") 'previous-line)
+;; (global-set-key (kbd "<down>") 'next-line)
+;; (global-set-key (kbd "<left>") 'left-char)
+;; (global-set-key (kbd "<right>") 'right-char)
+;; (global-set-key (kbd "C-w") 'kill-region)
+;; (global-set-key (kbd "C-s") 'isearch-forward)
+;; (global-set-key (kbd "C-r") 'isearch-backward)
+;; (global-set-key (kbd "M-x") 'execute-extended-command)
+;; 
+;; (global-set-key (kbd "C-x b") 'switch-to-buffer)
+;; (global-set-key (kbd "M-<") 'beginning-of-buffer)
+;; (global-set-key (kbd "M-<") 'end-of-buffer)
+;; (global-set-key (kbd "M-x") 'execute-extended-command)
+;; (global-set-key (kbd "C-y") 'yank)
+;; (global-set-key (kbd "M-y") 'yank-pop)
+;; (global-set-key (kbd "C-a") 'beginning-of-line)
+;; (global-set-key (kbd "C-e") 'end-of-line)
+;; (global-set-key (kbd "C-k") 'kill-line)
+;; (global-set-key (kbd "C-h k") 'describe-key)
+;; (global-set-key (kbd "C-h m") 'describe-mode)
+;; (global-set-key (kbd "C-h f") 'describe-function)
+;; 
+;; ;; C-x o
+;; ;; click selection of windows
+;; ;; C-s-up,down-left-right
+;; 
+;; 
+;; ;; https://github.com/raxod502/selectrum/pull/186/files
+;; (setq selectrum-minibuffer-map
+;;       (let ((m (make-sparse-keymap)))
+;;         (define-key m (kbd "C-g") #'abort-recursive-edit)
+;;         (define-key m (kbd "TAB") #'selectrum-insert-current-candidate)
+;;         (define-key m (kbd "<return>") #'selectrum-select-current-candidate)
+;;         (define-key m (kbd "TAB") #'selectrum-select-current-candidate)
+;;         (define-key m (kbd "p") #'selectrum-previous-candidate)
+;;         (define-key m (kbd "n") #'selectrum-next-candidate)
+;;         m))
+
+
+(defgroup thoth nil
+  "Project workbench, fueled by magic and mathematics."
+  :group 'tools
+  :group 'convenience)
+
+(defcustom thoth-folders nil
+  "A list of folders to index. Final output is from thoth-folders which are NOT in thoth-ignored-folders"
+  :group 'thoth
+  :type '(repeat string))
+
+(defcustom thoth-ignored-folders nil
+  "A list of folders to ignore. Final output is from thoth-folders which are NOT in thoth-ignored-folders"
+  :group 'thoth
+  :type '(repeat string))
+
+(defcustom thoth-project-name nil
+  "project name."
+  :group 'thoth
+  :type 'string)
+
+(defun thoth-root-path ()
+    (locate-dominating-file default-directory ".dir-locals.el"))
+
+;; (defun thoth-absolute-folder-paths ()
+;;   (mapcar (lambda (x) (s-concat (thoth-root-path) x)) thoth-folders))
+
+
+;; (defun thoth-absolute-ignored-folder-paths ()
+;;   (mapcar (lambda (x) (s-concat (thoth-root-path) x)) thoth-ignored-folders))
+
+
+(defun thoth-info ()
+  (interactive)
+  (let ((rootpath (locate-dominating-file default-directory ".dir-locals.el")))
+     (message "%s | +  %s | - %s" thoth-project-name
+ 	      (s-join ";" thoth-folders)
+	      (s-join ";" thoth-ignored-folders))))
+
+(defun thoth-find-file  ()
+  (interactive)
+  (setq debug-on-error t)
+  (let*
+      ((prompt-str thoth-project-name)
+       (find-not-folders-str (s-join " " (mapcar (lambda (x) (s-concat " -not -path " x)) thoth-ignored-folders)))
+       (find-folders-str (s-join " " thoth-folders))
+      (cmd (s-concat "find  " find-folders-str " " find-not-folders-str))
+      (out (s-split "\n" (shell-command-to-string cmd)))
+      (initial-input ""))
+  (find-file (completing-read prompt-str out nil nil initial-input))))
+
+
+(define-minor-mode thoth-mode
+  "Minor mode to assist project management and navigation."
+  ;; :lighter projectile--mode-line
+  ;; :keymap projectile-mode-map
+  :group 'thoth
+  ;; :require 'projectile
+  :global t
+  (cond
+   (thoth-mode
+    ;; setup the commander bindings
+    ;; (projectile-commander-bindings)
+    ;; initialize the projects cache if needed
+  )))
+
+;; (define-globalized-minor-mode global-thoth-mode thoth-mode thoth-on)
+;; (defun thoth-on () (thoth-mode 1))
+
+
+
+;; selectrum-select-current-candidate (found in selectrum-minibuffer-map)
+;; (define-key selectrum-minibuffer-map (kbd "<RET>") 'selectrum-select-current-candidate) 
+
+(defun mechanics ()
+  (interactive)
+  (run-scheme  "mit-scheme --band /home/bollu/work/sicm/scmutils-20200810/mechanics.com --library /home/bollu/.local/lib/mit-scheme-x86-64/")
+  (set-input-method 'TeX))
+
+;; start emacs server
+;; (server-start)
+
+;; use swiper for search
+(global-set-key (kbd "C-s") 'swiper-isearch)
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -479,8 +648,43 @@ Version 2016-04-04"
  '(ansi-color-names-vector
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(custom-safe-themes
-   '("cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "80d5a22931c15756b00fb258b80c93b8bc5096bb698dadfb6155ef3550e1c8fb" default)))
+   '("c1284dd4c650d6d74cfaf0106b8ae42270cab6c58f78efc5b7c825b6a4580417" "03f28a4e25d3ce7e8826b0a67441826c744cbf47077fb5bc9ddb18afe115005f" "be73fbde027b9df15a98a044bcfff4d46906b653cb6eef0d98ebccb7f8425dc9" "78c4238956c3000f977300c8a079a3a8a8d4d9fee2e68bad91123b58a4aa8588" "83e0376b5df8d6a3fbdfffb9fb0e8cf41a11799d9471293a810deb7586c131e6" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d14f3df28603e9517eb8fb7518b662d653b25b26e83bd8e129acea042b774298" "c335adbb7d7cb79bc34de77a16e12d28e6b927115b992bccc109fb752a365c72" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "80d5a22931c15756b00fb258b80c93b8bc5096bb698dadfb6155ef3550e1c8fb" default))
+ '(fci-rule-color "#f1c40f")
+ '(hl-paren-background-colors '("#2492db" "#95a5a6" nil))
+ '(hl-paren-colors '("#ecf0f1" "#ecf0f1" "#c0392b"))
+ '(pdf-view-midnight-colors '("#fdf4c1" . "#32302f"))
+ '(safe-local-variable-values
+   '((thoth-ignored-folders "~/work/lz/.git" "~/work/lz/.idea" "~/work/lz/.vscode")
+     (thoth-folders "~/work/lz/")
+     (thoth-project-name . "lizzy")
+     (thoth-folders ".")
+     (thoth-folders list ".")
+     (thoth-folders quote
+		    ("."))
+     (thoth-project-name . lizzy)))
+ '(sml/active-background-color "#34495e")
+ '(sml/active-foreground-color "#ecf0f1")
+ '(sml/inactive-background-color "#dfe4ea")
+ '(sml/inactive-foreground-color "#34495e")
+ '(vc-annotate-background "#ecf0f1")
+ '(vc-annotate-color-map
+   '((30 . "#e74c3c")
+     (60 . "#c0392b")
+     (90 . "#e67e22")
+     (120 . "#d35400")
+     (150 . "#f1c40f")
+     (180 . "#d98c10")
+     (210 . "#2ecc71")
+     (240 . "#27ae60")
+     (270 . "#1abc9c")
+     (300 . "#16a085")
+     (330 . "#2492db")
+     (360 . "#0a74b9")))
+ '(vc-annotate-very-old-color "#0a74b9"))
 ;; custom-set-variables was added by Custom.
 ;; If you edit it by hand, you could mess it up, so be careful.
 ;; Your init file should contain only one such instance.
 ;; If there is more than one, they won't work right.
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
