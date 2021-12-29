@@ -1,5 +1,6 @@
 "https://github.com/nanotee/nvim-lua-guide
 call plug#begin('~/.vim/plugged')
+Plug 'morhetz/gruvbox'
 Plug 'arthurxavierx/vim-unicoder'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'neovim/nvim-lspconfig'
@@ -179,8 +180,9 @@ let g:BorlandStyle = "classic"
 set termguicolors
 "colorscheme solarized8
 "colorscheme C64
+"colorscheme delek
+colorscheme gruvbox
 colorscheme badwolf
-colorscheme delek
 
 set background=dark
 set tabstop=2
@@ -211,6 +213,7 @@ au BufRead,BufNewFile *.mlir set syntax=c
 
 nnoremap <C-p> <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap <C-s> <cmd>lua require('telescope.builtin').live_grep()<cr>
+nnoremap <C-f> <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <C-b> <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <C-h> <cmd>lua require('telescope.builtin').help_tags()<cr>
 
@@ -222,9 +225,6 @@ vnoremap <leader>s :lua require('spectre').open_visual()<CR>
 "  search in current file
 nnoremap <leader>sp viw:lua require('spectre').open_file_search()<cr>
 
-
-
-
 " Find files using Telescope command-line sugar.
 "dired
 "nnoremap <C-p> <cmd>Telescope git_files<CR>
@@ -235,10 +235,7 @@ nnoremap <leader>sp viw:lua require('spectre').open_file_search()<cr>
 "nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 "nnoremap <leader>fs <cmd>Telescope lsp_workspace_symbols<cr>
 
-
-"source /home/bollu/dotfiles/digraph.vim
-
-"let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
-"execute "set rtp+=" . g:opamshare . "/merlin/vim"
-
-"copen: open quickfix. Mnemonic: 'cope' with the error
+"c-x c-o: open auto complete
+let g:opamshare = "/home/bollu/.opam/4.12.0/share"
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
+autocmd FileType ocaml source /home/bollu/.opam/4.12.0/share/ocp-indent/vim/indent/ocaml.vim

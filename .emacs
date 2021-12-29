@@ -35,6 +35,8 @@
 ;; (global-set-key (kbd "C-c C-=") 'er/expand-region)
 ;; (global-set-key (kbd "C-c C--") 'er/contract-region)
 
+;; proof general
+(straight-use-package 'proof-general)
 
 
 ;; RAINBOW DELIMITER
@@ -82,6 +84,7 @@
 
 ;; RACKET-MODE
 (straight-use-package 'racket-mode)
+(add-hook 'racket-mode-hook #'racket-xp-mode)
 ;; GEISER
 (straight-use-package 'geiser)
 (straight-use-package 'geiser-chicken)
@@ -90,7 +93,6 @@
 
 
 ;; SLY
-
 (straight-use-package 'sly)
 (defun sly-add-keys ()
     (local-set-key (kbd "C-p") sly-selector-map))
@@ -109,6 +111,33 @@
 (add-hook 'lisp-mode-hook (lambda ()
                            (progn (lispy-mode)
                                   (rainbow-delimiters-mode))))
+
+;; HELP (BROKEN ON PURPOSE
+(straight-use-package 'helpful)
+;; Note that the built-in `describe-function' includes both functions
+;; and macros. `helpful-function' is functions only, so we provide
+;; `helpful-callable' as a drop-in replacement.
+(global-set-key (kbd "C-h f") #'helpful-callable)
+
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+;; Lookup the current symbol at point. C-c C-d is a common keybinding
+;; for this in lisp modes.
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
+
+;; Look up *F*unctions (excludes macros).
+;;
+;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
+;; already links to the manual, if a function is referenced there.
+(global-set-key (kbd "C-h F") #'helpful-function)
+
+;; Look up *C*ommands.
+;;
+;; By default, C-h C is bound to describe `describe-coding-system'. I
+;; don't find this very useful, but it's frequently useful to only
+;; look at interactive functions.
+(global-set-key (kbd "C-h C") #'helpful-command)
+
 ;; LISPY
 (straight-use-package 'lispy)
 (straight-use-package 'paredit)
@@ -135,15 +164,17 @@
 ;; TODO: write a new shell for yourself using comint-mode
 (straight-use-package 'ctrlf)
 (straight-use-package 'dracula-theme)
+;; (straight-use-package 'nano-theme)
 (straight-use-package 'badwolf-theme)
 (straight-use-package 'htmlize)
 (straight-use-package 'almost-mono-themes)
 (straight-use-package 'borland-blue-theme)
 
 (straight-use-package 'prescient)
-(straight-use-package 'selectrum)
-(straight-use-package 'selectrum-prescient)
+(straight-use-package 'vertico)
 (straight-use-package 'projectile)
+(straight-use-package 'rg)
+(straight-use-package 'ripgrep)
 ;; (straight-use-package 'company-mode)
 (straight-use-package 'magit)
 (straight-use-package 'which-key)
@@ -158,18 +189,29 @@
 (straight-use-package 'monokai-theme)
 (straight-use-package 'selectric-mode)
 (straight-use-package 'zig-mode)
+(straight-use-package 'merlin)
+(straight-use-package 'tuareg)
 
 ;; clang-format
 (setq clang-format-style-option "llvm")
 (setq clang-format+-always-enable "llvm")
 
 ;; AGDA
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
+;; (load-file (let ((coding-system-for-read 'utf-8))
+;;                 (shell-command-to-string "agda-mode locate 2>/dev/null"))
+(load-file "/home/bollu/.cabal/store/ghc-9.0.1/Agda-2.6.2-e4d39c2fc71c7d3a88b69b0a8dc1d4f53f9585135d37d2c8bf5962dd4ed1182c/share/emacs-mode/agda2.el")
+
+
+;; OCAML
+(require 'tuareg)
+(require 'merlin)
+(add-hook 'tuareg-mode-hook #'merlin-mode)
+(add-hook 'caml-mode-hook #'merlin-mode)
 
 
 ;; LEAN
 (setq load-path (cons "/home/bollu/work/lean4/lean4-mode" load-path))
+(setq load-path (cons "/home/bollu/work/lean4-contrib/lean4-mode" load-path))
 (require 'lean4-mode)
 
 ;; https://github.com/minad/consult
@@ -201,9 +243,7 @@
 ;; (load-theme 'twilight-bright t)
 (load-theme 'badwolf t)
 
-(selectrum-mode)
-(selectrum-prescient-mode)
-(prescient-persist-mode +1)
+(vertico-mode +1)
 (projectile-mode +1)
 (ctrlf-mode +1)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
@@ -269,16 +309,17 @@
                     :weight 'normal)
 
 
-(set-face-attribute 'default nil
-                    :family "Meslo LG S DZ for Powerline"
-                    :height 100
-                    :weight 'normal
-                    :width  'normal)
 
 (set-face-attribute 'default nil
                     :family "mononoki"
                     :height 130
                     :weight 'bold
+                    :width  'normal)
+
+(set-face-attribute 'default nil
+                    :family "Meslo LG S DZ for Powerline"
+                    :height 130
+                    :weight 'normal
                     :width  'normal)
 
 
@@ -575,6 +616,10 @@ Version 2016-04-04"
   :group 'thoth
   :type 'string)
 
+(defvar thoth-known-projects nil
+  "List of locations where we have previously seen projects")
+
+
 (defun thoth-root-path ()
     (locate-dominating-file default-directory ".dir-locals.el"))
 
@@ -590,8 +635,14 @@ Version 2016-04-04"
   (interactive)
   (let ((rootpath (locate-dominating-file default-directory ".dir-locals.el")))
      (message "%s | +  %s | - %s" thoth-project-name
- 	      (s-join ";" thoth-folders)
-	      (s-join ";" thoth-ignored-folders))))
+           (s-join ";" thoth-folders)
+          (s-join ";" thoth-ignored-folders))))
+
+(defun thoth-search-regex (regex)
+  (interactive)
+  (message "regex: %s" regex))
+
+(defun thoth-search-literal ())
 
 (defun thoth-find-file  ()
   (interactive)
@@ -600,10 +651,10 @@ Version 2016-04-04"
       ((prompt-str thoth-project-name)
        (find-not-folders-str (s-join " " (mapcar (lambda (x) (s-concat " -not -path " x)) thoth-ignored-folders)))
        (find-folders-str (s-join " " thoth-folders))
-      (cmd (s-concat "find  " find-folders-str " " find-not-folders-str))
-      (out (s-split "\n" (shell-command-to-string cmd)))
-      (initial-input ""))
-  (find-file (completing-read prompt-str out nil nil initial-input))))
+       (cmd (s-concat "find  " find-folders-str " " find-not-folders-str))
+       (out (s-split "\n" (shell-command-to-string cmd)))
+       (initial-input ""))
+   (find-file (completing-read prompt-str out nil nil initial-input))))
 
 
 (define-minor-mode thoth-mode
@@ -614,11 +665,11 @@ Version 2016-04-04"
   ;; :require 'projectile
   :global t
   (cond
-   (thoth-mode
+   (thoth-mode)))
     ;; setup the commander bindings
     ;; (projectile-commander-bindings)
     ;; initialize the projects cache if needed
-  )))
+  
 
 ;; (define-globalized-minor-mode global-thoth-mode thoth-mode thoth-on)
 ;; (defun thoth-on () (thoth-mode 1))
@@ -640,6 +691,105 @@ Version 2016-04-04"
 (global-set-key (kbd "C-s") 'swiper-isearch)
 
 
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+;; (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+
+;; MEOW for modal editing
+(straight-use-package 'meow)
+(defun meow-setup ()
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("C-d" . (lambda () (interactive) (dotimes (i 5) (meow-next 1))))
+   '("C-u" . (lambda () (interactive) (dotimes (i 5) (meow-prev 1))))
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore)))
+
+(require 'meow)
+(meow-setup)
+(meow-global-mode 1)
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -648,19 +798,20 @@ Version 2016-04-04"
  '(ansi-color-names-vector
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(custom-safe-themes
-   '("c1284dd4c650d6d74cfaf0106b8ae42270cab6c58f78efc5b7c825b6a4580417" "03f28a4e25d3ce7e8826b0a67441826c744cbf47077fb5bc9ddb18afe115005f" "be73fbde027b9df15a98a044bcfff4d46906b653cb6eef0d98ebccb7f8425dc9" "78c4238956c3000f977300c8a079a3a8a8d4d9fee2e68bad91123b58a4aa8588" "83e0376b5df8d6a3fbdfffb9fb0e8cf41a11799d9471293a810deb7586c131e6" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d14f3df28603e9517eb8fb7518b662d653b25b26e83bd8e129acea042b774298" "c335adbb7d7cb79bc34de77a16e12d28e6b927115b992bccc109fb752a365c72" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "80d5a22931c15756b00fb258b80c93b8bc5096bb698dadfb6155ef3550e1c8fb" default))
+   '("1b780020c8fe8c91829c06d2a9d5c7d8a182216e479c5b24e787fb1712ffb176" "c1284dd4c650d6d74cfaf0106b8ae42270cab6c58f78efc5b7c825b6a4580417" "03f28a4e25d3ce7e8826b0a67441826c744cbf47077fb5bc9ddb18afe115005f" "be73fbde027b9df15a98a044bcfff4d46906b653cb6eef0d98ebccb7f8425dc9" "78c4238956c3000f977300c8a079a3a8a8d4d9fee2e68bad91123b58a4aa8588" "83e0376b5df8d6a3fbdfffb9fb0e8cf41a11799d9471293a810deb7586c131e6" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d14f3df28603e9517eb8fb7518b662d653b25b26e83bd8e129acea042b774298" "c335adbb7d7cb79bc34de77a16e12d28e6b927115b992bccc109fb752a365c72" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "80d5a22931c15756b00fb258b80c93b8bc5096bb698dadfb6155ef3550e1c8fb" default))
  '(fci-rule-color "#f1c40f")
  '(hl-paren-background-colors '("#2492db" "#95a5a6" nil))
  '(hl-paren-colors '("#ecf0f1" "#ecf0f1" "#c0392b"))
  '(pdf-view-midnight-colors '("#fdf4c1" . "#32302f"))
  '(safe-local-variable-values
-   '((thoth-ignored-folders "~/work/lz/.git" "~/work/lz/.idea" "~/work/lz/.vscode")
+   '((checkdoc-package-keywords-flag)
+     (thoth-ignored-folders "~/work/lz/.git" "~/work/lz/.idea" "~/work/lz/.vscode")
      (thoth-folders "~/work/lz/")
      (thoth-project-name . "lizzy")
      (thoth-folders ".")
      (thoth-folders list ".")
      (thoth-folders quote
-		    ("."))
+            ("."))
      (thoth-project-name . lizzy)))
  '(sml/active-background-color "#34495e")
  '(sml/active-foreground-color "#ecf0f1")
@@ -685,6 +836,3 @@ Version 2016-04-04"
 ;; If you edit it by hand, you could mess it up, so be careful.
 ;; Your init file should contain only one such instance.
 ;; If there is more than one, they won't work right.
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line

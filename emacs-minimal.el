@@ -28,16 +28,20 @@
 (which-key-mode)
 (setq which-key-idle-delay 0.3)
 
+(setq gc-cons-threshold (* 100 1024 1024))
+			   
 (load-theme 'wombat t)
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 
 (straight-use-package 'golden-ratio)
 (straight-use-package 'golden-ratio-scroll-screen)
+(golden-ratio-mode +1)
 
 
 ;; LSP :(
 (straight-use-package 'lsp-mode)
+(straight-use-package 'lsp-ui)
 
 
 ;; vertical auto complete
@@ -46,6 +50,18 @@
 
 
 ;; keep these at the end.
+(defun bollu-toggle-modal () (interactive)
+  (read-only-mode 'toggle)
+  (modalka-mode 'toggle))
+
+
+(defun bollu-normal-mode-advice (f)
+  (interactive)
+  "Run function f that can mutate the buffer in normal mode."
+  (read-only-mode -1)
+  (f)
+  (read-only-mode +1))
+   
 
 ;; bindings that stick on top of other major modes.
 (straight-use-package 'bind-key)
@@ -66,7 +82,7 @@
  ("C-x C-a" . mark-whole-buffer)
  ("C-c C-a" . mark-whole-buffer)
  ("<return>" . modalka-mode)
- ("C-c C-c" . modalka-mode)
+ ("C-c C-c" . bollu-toggle-modal)
  )
 
 
@@ -83,7 +99,7 @@
 ;; (modalka-define-kbd "p" "C-p")
 ;; (modalka-define-kbd "w" "C-w")
 ;; (modalka-define-kbd "y" "C-y")
-
+(modalka-mode +1)
 (define-key modalka-mode-map (kbd "<enter>") #'set-mark-command)
 (define-key modalka-mode-map (kbd "<space>") #'set-mark-command)
 (define-key modalka-mode-map (kbd "v") #'set-mark-command)
@@ -103,6 +119,7 @@
 (define-key modalka-mode-map (kbd "d") #'kill-region)
 (define-key modalka-mode-map (kbd "D") #'kill-line)
 (define-key modalka-mode-map (kbd "y") #'kill-ring-save)
+(define-key modalka-mode-map (kbd "x") #'execute-extended-command)
 
 (define-key modalka-mode-map (kbd "p") #'yank)
 (define-key modalka-mode-map (kbd "P") #'yank-pop)
@@ -144,16 +161,15 @@
 
 
 
-
-(modalka-global-mode 1)
-
-
-(add-hook 'text-mode-hook #'modalka-mode)
-(add-hook 'prog-mode-hook #'modalka-mode)
-(add-hook 'isearch-mode-hook #'modalka-mode)
+(add-hook 'text-mode-hook #'bollu-toggle-modal)
+(add-hook 'prog-mode-hook #'bollu-toggle-modal)
+(add-hook 'isearch-mode-hook #'bollu-toggle-modal)
 
 
 (setq-default cursor-type '(bar . 1))
 (setq modalka-cursor-type 'box)
 
 
+
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . text-mode))
