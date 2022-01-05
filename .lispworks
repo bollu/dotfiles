@@ -1,0 +1,80 @@
+;;; https://raw.githubusercontent.com/bollu/lispworks-conf/master/.lispworks
+;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
+
+(in-package :cl-user)
+
+
+;; (set-default-character-element-type 'character)
+
+#+:win32
+;; to "fix" USER-HOMEDIR-PATHNAME
+;; see <http://support.microsoft.com/default.aspx?scid=kb;en-us;101507>
+;; (setf (lw:environment-variable "HOMEPATH") "\\Users\\satok\\"
+;;      (lw:environment-variable "HOMEDRIVE") "Z:")
+
+;; (change-directory (user-homedir-pathname))
+
+;; ------------------
+;; the following two forms make sure the "Find Source" command works
+;; with the editor source
+#-:lispworks-personal-edition
+(load-logical-pathname-translations "EDITOR-SRC")
+
+#-:lispworks-personal-edition
+(setf dspec:*active-finders*
+        (append dspec:*active-finders*
+                (list "EDITOR-SRC:editor-tags-db")))
+
+#-:lispworks-personal-edition
+(setf dspec:*active-finders*
+        (append dspec:*active-finders*
+                (list "EDITOR-SRC:editor-tags-db")))
+
+;; SUPER COOL STUFF
+;; ==================
+
+(editor:bind-key "Edit Callers" #("Control-c" "<") :mode "Lisp")
+(editor:bind-key "Edit Callees" #("Control-c" ">") :mode "Lisp")
+(editor:bind-key "Walk Form" #("Control-x" "Return"))
+(editor:bind-key "Function Arglist Displayer" "Control-i" :mode "Lisp") ;; MIND BLOWING
+(editor:bind-key "Toggle Breakpoint" #("Control-c" "b") :mode "Lisp")
+(editor:bind-key "Toggle Breakpoint" #("Control-c" "C-b") :mode "Lisp")
+
+(editor:bind-key "Evaluate Last Form In Listener" #("Control-x" "Control-l"))
+;; (editor:bind-key "evaluate last form and describe" #("control-c" "d"))
+
+
+;; humdrum necessities 
+;; ======================
+
+
+(editor:bind-key "kill previous word" "control-backspace")
+
+(editor:bind-key "tools editor" "f11")
+(editor:bind-key "tools listener" "f12")
+
+(editor:bind-key "undo" "control-/")
+(editor:bind-key "undo" "control-z")
+
+
+(editor:bind-key "Tools Listener" #("Control-c" "Control-z"))
+(editor:bind-key "Tools Editor" #("Control-c" "z"))
+
+(editor:bind-key "Next Window" "Control-t")
+(editor:bind-key "Previous Window" "Control-T")
+
+;; UNKNOWN
+;; ============
+
+
+;; (editor:bind-key "Maybe Invoke Listener Shortcut" "," :mode "Execute")
+;; (editor:bind-key "Mark Form" "Control-Meta-Space")
+;; (editor:bind-key "Show Documentation" #("Control-c" "Control-d" "d") :mode "Lisp")
+;; (editor:bind-key "Show Documentation" #("Control-c" "Control-d" "Control-d") :mode "Lisp")
+;; (editor:bind-key "Search Files" "Control-Meta-g")
+;; (editor:bind-key "Search System" "Control-Meta-G")
+;; (editor:bind-key "Macroexpand Form" #("Control-c" "Return"))
+;; (editor:bind-key "Backward Kill Form" "Meta-Backspace")
+;; (editor:bind-key "Meta Documentation" "F5")
+;; (editor:bind-key "Function Documentation" "Shift-F5")
+;; (editor:bind-key "Show Documentation" "Ctrl-F5")
