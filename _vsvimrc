@@ -1,0 +1,23 @@
+set ignorecase
+set clipboard=unnamed
+
+let mapleader=","
+
+nnoremap jk <Esc>
+
+" break out of the tyranny of text! Navigate by method
+nnoremap <leader>m :vsc Edit.NextMethod<cr>
+nnoremap <leader>M :vsc Edit.PreviousMethod<cr>
+
+nnoremap R :vsc Refactor.Rename<cr>
+
+" jump between compilation errors
+nnoremap <leader>e :vsc View.NextError<cr>
+nnoremap <leader>E :vsc View.PreviousError<cr>
+
+"build
+map <Space>b :vsc Build.BuildSolution<CR>
+map <Space>r :vsc Debug.StartWithoutDebugging<CR>
+map <Space>d :vsc Debug.Start
+
+map <C-p>  :vsc Edit.GoToAll<CR>
