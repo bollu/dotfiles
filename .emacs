@@ -1,5 +1,7 @@
 ;; eshell set paths
 
+
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -17,6 +19,11 @@
 (exec-path-from-shell-copy-env "PATH")
 (defalias 'ff 'find-file) ;; nice for use within eshell
 
+(straight-use-package 'use-package)
+
+;; sublime text control d
+(global-set-key (kbd "C-d") 'rectangle-mark-mode)
+
 ;; HASKELL
 (straight-use-package 'haskell-mode)
 ;; (add-hook ’haskell-mode-hook ’interactive-haskell-mode)
@@ -27,13 +34,6 @@
 ;; HELP
 (global-set-key [f1]   'help-command)
 
-
-;; EXPAND REGION
-(straight-use-package 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-(global-set-key (kbd "C--") 'er/contract-region) 
-;; (global-set-key (kbd "C-c C-=") 'er/expand-region)
-;; (global-set-key (kbd "C-c C--") 'er/contract-region)
 
 ;; proof general
 (straight-use-package 'proof-general)
@@ -54,41 +54,6 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
-
-
-;; SBCL / COMMON LISP
-;; (straight-use-package 'slime)
-;; (add-hook 'slime-mode-hook
-;;   (lambda ()
-;;      (local-set-key (kbd "C-c C-?") 'slime-documentation-lookup)
-;;      (local-set-key (kbd "C-c ?") 'slime-documentation-lookup)
-;;      (local-set-key (kbd "C-\\") 'slime-fuzzy-complete-symbol)
-;;      (local-set-key (kbd "C-c p") 'slime-selector)
-;;      (local-set-key (kbd "C-c C-p") 'slime-selector)
-;;      (local-set-key (kbd "C-c P") 'slime-selector)
-;;      (local-set-key (kbd "C-c C-p") 'slime-selector)
-;;      (local-set-key (kbd "C-c o") 'slime-selector)
-;;      (local-set-key (kbd "C-c O") 'slime-selector)
-;;      (local-set-key (kbd "C-c C-O") 'slime-selector)
-;;      (local-set-key (kbd "C-c o") 'slime-selector)
-;;      (local-set-key (kbd "C-c C-o") 'slime-selector)
-;;      (local-set-key (kbd "C-x C-r") 'slime-eval-defun)
-;;      (rainbow-delimiters-mode)
-;;      (lispy-mode)))
-;; (defun bollu/lispenv ()  (interactive)
-;;    (unless (get-process "SLIME Lisp")
-;;      (progn (lispy-mode) (slime) (slime-sync-package-and-default-directory))))
-;; (setq slime-net-coding-system 'utf-8-unix)
-;; (setq inferior-lisp-program "sbcl")
-;; (setq initial-major-mode 'lisp-mode)
-
-;; RACKET-MODE
-(straight-use-package 'racket-mode)
-(add-hook 'racket-mode-hook #'racket-xp-mode)
-;; GEISER
-(straight-use-package 'geiser)
-(straight-use-package 'geiser-chicken)
-(setq geiser-racket-binary (executable-find "chicken-csi"))
 
 
 
@@ -163,19 +128,37 @@
 
 ;; TODO: write a new shell for yourself using comint-mode
 (straight-use-package 'ctrlf)
-(straight-use-package 'dracula-theme)
-;; (straight-use-package 'nano-theme)
-(straight-use-package 'badwolf-theme)
-(straight-use-package 'htmlize)
-(straight-use-package 'almost-mono-themes)
-(straight-use-package 'borland-blue-theme)
+
 
 (straight-use-package 'prescient)
-(straight-use-package 'vertico)
+
+
+;; (straight-use-package 'vertico)
+;; Enable vertico
+(use-package vertico
+  :straight (vertico :includes vertico-directory
+                     :files (:defaults "extensions/vertico-directory.el"))
+  :init
+  (vertico-mode))
+
+;; Configure directory extension.
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  ;; More convenient directory navigation commands
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  ;; Tidy shadowed file names
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+  
 (straight-use-package 'projectile)
 (straight-use-package 'rg)
 (straight-use-package 'ripgrep)
-;; (straight-use-package 'company-mode)
+(straight-use-package 'company-mode)
+(global-company-mode)
+
 (straight-use-package 'magit)
 (straight-use-package 'which-key)
 (straight-use-package 'dash)
@@ -186,11 +169,13 @@
 ;; (straight-use-package 'lean-mode)
 (straight-use-package 'bury-successful-compilation) ;; close compile window on success
 (straight-use-package 'popwin)
-(straight-use-package 'monokai-theme)
 (straight-use-package 'selectric-mode)
 (straight-use-package 'zig-mode)
 (straight-use-package 'merlin)
 (straight-use-package 'tuareg)
+(straight-use-package 'vterm)
+
+(global-set-key (kbd "C-c C-c") 'vterm)
 
 ;; clang-format
 (setq clang-format-style-option "llvm")
@@ -199,8 +184,17 @@
 ;; AGDA
 ;; (load-file (let ((coding-system-for-read 'utf-8))
 ;;                 (shell-command-to-string "agda-mode locate 2>/dev/null"))
-(load-file "/home/bollu/.cabal/store/ghc-9.0.1/Agda-2.6.2-e4d39c2fc71c7d3a88b69b0a8dc1d4f53f9585135d37d2c8bf5962dd4ed1182c/share/emacs-mode/agda2.el")
+;; (load-file "/home/bollu/.cabal/store/ghc-9.0.1/Agda-2.6.2-e4d39c2fc71c7d3a88b69b0a8dc1d4f53f9585135d37d2c8bf5962dd4ed1182c/share/emacs-mode/agda2.el")
 
+;; LEAN4
+(setq load-path (cons "/home/siddu_druid/work/lean4-mode" load-path))
+(straight-use-package 'dash)
+(straight-use-package 'flycheck)
+(straight-use-package 'f)
+(straight-use-package 'lsp-mode)
+(straight-use-package 'magit-section)
+(straight-use-package 's)
+(require 'lean4-mode)
 
 ;; OCAML
 (require 'tuareg)
@@ -210,9 +204,9 @@
 
 
 ;; LEAN
-(setq load-path (cons "/home/bollu/work/lean4/lean4-mode" load-path))
-(setq load-path (cons "/home/bollu/work/lean4-contrib/lean4-mode" load-path))
-(require 'lean4-mode)
+;; (setq load-path (cons "/home/bollu/work/lean4/lean4-mode" load-path))
+;; (setq load-path (cons "/home/bollu/work/lean4-contrib/lean4-mode" load-path))
+;; (require 'lean4-mode)
 
 ;; https://github.com/minad/consult
 ;; https://github.com/oantolin/embark/
@@ -233,17 +227,12 @@
 
 ;; (load-theme 'almost-mono-white t)
 ;; (load-theme 'borland-blue t)
-(straight-use-package 'gruvbox-theme)
-(straight-use-package 'afternoon-theme)
-(straight-use-package 'flatui-theme)
-(straight-use-package 'twilight-bright-theme)
+(load-theme 'wombat t)
 
-
-;; (load-theme 'gruvbox t)
-;; (load-theme 'twilight-bright t)
-(load-theme 'badwolf t)
 
 (vertico-mode +1)
+
+
 (projectile-mode +1)
 (ctrlf-mode +1)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
@@ -265,14 +254,6 @@
 (global-set-key (kbd "C-c p r") 'lsp-find-references)
 (global-set-key (kbd "C-c p d") 'lsp-find-declaration)
 
-
-;; rectangle selection: poor man's sublime text!
-;; https://www.emacswiki.org/emacs/CuaMode
-;; https://emacs.stackexchange.com/questions/16897/kill-rectangle-with-cua-mode-support
-;; find-library RET cua-base for hep
-(cua-mode)
-(cua-selection-mode t)
-(setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
 
 
 
@@ -352,7 +333,6 @@
 ;;   (output-html "xdg-open"))
 
 (setq lean-rootdir "/home/bollu/work/lean4/build/stage1")
-;; (setq-default TeX-master nil) ;; enable if we want multi file project
 (global-unset-key (kbd "C-v"))
 (global-unset-key (kbd "C-x p"))
 (global-unset-key (kbd "C-x C-p"))
@@ -366,7 +346,6 @@
 (global-set-key (kbd "C-c /") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c C-/") 'comment-or-uncomment-region)
 
-;; (global-set-key (kbd "C-u") 'undo-tree-undo)
 
 (global-auto-revert-mode t) ;; auto load changed buffers on disk that don't have local unsaved data
 
@@ -381,40 +360,6 @@
 (global-set-key (kbd "C-x C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-c C-a") 'mark-whole-buffer)
 
-(defun my-ansi-term ()
-  "Open an ansi-term if it doesn't already exist, otherwise switch to current one.
-   Stolen from: https://old.reddit.com/r/emacs/comments/46l1mu/how_to_make_ansiterm_go_to_the_same_buffer"
-  (interactive)
-  (if (get-buffer "*eshell*")
-      (switch-to-buffer "*eshell*")
-    (eshell)))
-(global-set-key (kbd "C-c \\") 'my-ansi-term)
-(global-set-key (kbd "C-c C-\\") 'my-ansi-term)
-(global-set-key (kbd "C-x C-\\") 'my-ansi-term)
-(global-set-key (kbd "C-x \\") 'my-ansi-term)
-
-(require 'term)
-(defun jnm/term-toggle-mode ()
-  "Toggles term between line mode and char mode.
-   Found from: http://joelmccracken.github.io/entries/switching-between-term-mode-and-line-mode-in-emacs-term/"
-  (interactive)
-  (if (term-in-line-mode)
-      (progn ;; line -> char
-          (term-char-mode)
-          (read-only-mode -1)
-          (setq-local cursor-type 'bar))
-      (progn ;; char -> line)
-          (term-line-mode)
-          (read-only-mode 1)
-          (setq-local cursor-type 'box))))
-
-
-
-(define-key term-mode-map (kbd "C-j") 'jnm/term-toggle-mode)
-(define-key term-mode-map (kbd "C-k") 'kill-line)
-
-(define-key term-raw-map (kbd "C-j") 'jnm/term-toggle-mode)
-(define-key term-raw-map (kbd "C-k") 'kill-line)
 
 
 (defun bollu/smarter-cut ()
@@ -425,27 +370,10 @@
         (kill-ring-save (region-beginning) (region-end))
         ;; else
         (kill-region (region-beginning) (region-end))))
-(define-key term-mode-map (kbd "C-w") 'bollu/smarter-cut)
 
-;; (defun bollu/smarter-kill-end-of-line ()
-;;     "If text selected, cut it. If no text selected, kill till end of line.
-;;      TODO: adapt to kill till end of line smartly; ie, copy if cannot cut."
-;;     (interactive)
-;;     (if (mark-active) (bollu/smarter-cut) (kill-line)))
-
-        
+(global-set-key (kbd "C-w") 'bollu/smarter-cut)
 
 
-(define-key term-mode-map (kbd "C-w") 'bollu/smarter-cut)
-
-;; TODO: teach C-y to copy if bufferis read-only
-;; TODO: teach C-k to kill region if region is selected
-;; TODO: teach C-s (ctrlf-mode) to search whatever is selected under cursor
-;; TODO: make C-backspace eat whitespace backwards
-
-
-;; load back.el
-;; (load-file "/home/bollu/.emacs.d/back.el")
 
 
 ;; go to previous location
@@ -502,15 +430,6 @@ Version 2016-04-04"
       (forward-line 1)))
   (switch-to-buffer (htmlize-buffer)))
 
-;; https://emacs.stackexchange.com/a/24758/28600
-(setq org-plus-line-capture (number-to-string (line-number-at-pos)))
-
-;; org
-(setq org-capture-templates
-    `(;; Note the backtick here, it's required so that the defvar based tempaltes will work!
-      ;;http://comments.gmane.org/gmane.emacs.orgmode/106890
-      ("c" "code" entry (file+headline "~/dotfiles/code-notes.org" "code")
-       "* [[file://%F::%(with-current-buffer (org-capture-get :original-buffer) (number-to-string (line-number-at-pos)))][%F - %^{Link Text}]]\nCreated On: %U\n#+BEGIN_SRC\n%i\n#+END_SRC\n" :prepend true)))
 
 
 (define-key global-map (kbd "C-c c")
@@ -529,9 +448,9 @@ Version 2016-04-04"
 ;; (load-file "/home/bollu/work/minitt/stlc.el")
 
 ;; LLVM
-(setq load-path
-  (cons (expand-file-name "/home/bollu/work/llvm-project/llvm/utils/emacs") load-path))
-(require 'llvm-mode)
+;; (setq load-path
+;;  (cons (expand-file-name "/home/bollu/work/llvm-project/llvm/utils/emacs") load-path))
+;; (require 'llvm-mode)
 
 ;; disable ALL KEYS
 ;; https://emacs.stackexchange.com/questions/3870/how-to-truly-unbind-all-global-keybinds
@@ -595,7 +514,6 @@ Version 2016-04-04"
 ;;         (define-key m (kbd "n") #'selectrum-next-candidate)
 ;;         m))
 
-
 (defgroup thoth nil
   "Project workbench, fueled by magic and mathematics."
   :group 'tools
@@ -622,14 +540,6 @@ Version 2016-04-04"
 
 (defun thoth-root-path ()
     (locate-dominating-file default-directory ".dir-locals.el"))
-
-;; (defun thoth-absolute-folder-paths ()
-;;   (mapcar (lambda (x) (s-concat (thoth-root-path) x)) thoth-folders))
-
-
-;; (defun thoth-absolute-ignored-folder-paths ()
-;;   (mapcar (lambda (x) (s-concat (thoth-root-path) x)) thoth-ignored-folders))
-
 
 (defun thoth-info ()
   (interactive)
@@ -689,106 +599,6 @@ Version 2016-04-04"
 
 ;; use swiper for search
 (global-set-key (kbd "C-s") 'swiper-isearch)
-
-
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-;; (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
-
-;; MEOW for modal editing
-(straight-use-package 'meow)
-(defun meow-setup ()
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (meow-motion-overwrite-define-key
-   '("j" . meow-next)
-   '("k" . meow-prev)
-   '("<escape>" . ignore))
-  (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
-   '("j" . "H-j")
-   '("k" . "H-k")
-   ;; Use SPC (0-9) for digit arguments.
-   '("1" . meow-digit-argument)
-   '("2" . meow-digit-argument)
-   '("3" . meow-digit-argument)
-   '("4" . meow-digit-argument)
-   '("5" . meow-digit-argument)
-   '("6" . meow-digit-argument)
-   '("7" . meow-digit-argument)
-   '("8" . meow-digit-argument)
-   '("9" . meow-digit-argument)
-   '("0" . meow-digit-argument)
-   '("/" . meow-keypad-describe-key)
-   '("?" . meow-cheatsheet))
-  (meow-normal-define-key
-   '("C-d" . (lambda () (interactive) (dotimes (i 5) (meow-next 1))))
-   '("C-u" . (lambda () (interactive) (dotimes (i 5) (meow-prev 1))))
-   '("0" . meow-expand-0)
-   '("9" . meow-expand-9)
-   '("8" . meow-expand-8)
-   '("7" . meow-expand-7)
-   '("6" . meow-expand-6)
-   '("5" . meow-expand-5)
-   '("4" . meow-expand-4)
-   '("3" . meow-expand-3)
-   '("2" . meow-expand-2)
-   '("1" . meow-expand-1)
-   '("-" . negative-argument)
-   '(";" . meow-reverse)
-   '("," . meow-inner-of-thing)
-   '("." . meow-bounds-of-thing)
-   '("[" . meow-beginning-of-thing)
-   '("]" . meow-end-of-thing)
-   '("a" . meow-append)
-   '("A" . meow-open-below)
-   '("b" . meow-back-word)
-   '("B" . meow-back-symbol)
-   '("c" . meow-change)
-   '("d" . meow-delete)
-   '("D" . meow-backward-delete)
-   '("e" . meow-next-word)
-   '("E" . meow-next-symbol)
-   '("f" . meow-find)
-   '("g" . meow-cancel-selection)
-   '("G" . meow-grab)
-   '("h" . meow-left)
-   '("H" . meow-left-expand)
-   '("i" . meow-insert)
-   '("I" . meow-open-above)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
-   '("K" . meow-prev-expand)
-   '("l" . meow-right)
-   '("L" . meow-right-expand)
-   '("m" . meow-join)
-   '("n" . meow-search)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
-   '("p" . meow-yank)
-   '("q" . meow-quit)
-   '("Q" . meow-goto-line)
-   '("r" . meow-replace)
-   '("R" . meow-swap-grab)
-   '("s" . meow-kill)
-   '("t" . meow-till)
-   '("u" . meow-undo)
-   '("U" . meow-undo-in-selection)
-   '("v" . meow-visit)
-   '("w" . meow-mark-word)
-   '("W" . meow-mark-symbol)
-   '("x" . meow-line)
-   '("X" . meow-goto-line)
-   '("y" . meow-save)
-   '("Y" . meow-sync-grab)
-   '("z" . meow-pop-selection)
-   '("'" . repeat)
-   '("<escape>" . ignore)))
-
-(require 'meow)
-(meow-setup)
-(meow-global-mode 1)
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
