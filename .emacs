@@ -22,7 +22,7 @@
 (straight-use-package 'use-package)
 
 ;; sublime text control d
-(global-set-key (kbd "C-d") 'rectangle-mark-mode)
+(global-set-key (kbd "C-d") 'rectangle-next-line)
 
 ;; HASKELL
 (straight-use-package 'haskell-mode)
@@ -74,8 +74,10 @@
 
 
 (add-hook 'lisp-mode-hook (lambda ()
-                           (progn (lispy-mode)
-                                  (rainbow-delimiters-mode))))
+                           (progn (rainbow-delimiters-mode))))
+
+(add-hook 'elisp-mode-hook (lambda ()
+                           (progn (rainbow-delimiters-mode))))
 
 ;; HELP (BROKEN ON PURPOSE
 (straight-use-package 'helpful)
@@ -83,7 +85,7 @@
 ;; and macros. `helpful-function' is functions only, so we provide
 ;; `helpful-callable' as a drop-in replacement.
 (global-set-key (kbd "C-h f") #'helpful-callable)
-
+(global-set-key (kbd "C-h m") #'helpful-mode)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 ;; Lookup the current symbol at point. C-c C-d is a common keybinding
@@ -133,8 +135,47 @@
 (straight-use-package 'prescient)
 
 
+;; better ivy
+;; Example configuration for Consult
+(use-package consult
+  :straight (consult)
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings (mode-specific-map)
+         ("C-x C-b" . consult-buffer)                ;; orig. switch-to-buffer
+         ;; Other custom bindings
+         ("C-v" . consult-yank-pop)                ;; orig. yank-pop
+	 ("C-c C-s" . consult-ripgrep)
+	 ("C-c C-r" . consult-ripgrep)
+	 )
+
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; The :init configuration is always executed (Not lazy)
+  :init
+
+  ;; Optionally replace `completing-read-multiple' with an enhanced version.
+  (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
+
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; (kbd "C-+")
+
+)
+
 ;; (straight-use-package 'vertico)
 ;; Enable vertico
+;; better completing-read.
 (use-package vertico
   :straight (vertico :includes vertico-directory
                      :files (:defaults "extensions/vertico-directory.el"))
@@ -152,7 +193,30 @@
               ("M-DEL" . vertico-directory-delete-word))
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
-  
+
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
 (straight-use-package 'projectile)
 (straight-use-package 'rg)
 (straight-use-package 'ripgrep)
@@ -614,14 +678,15 @@ Version 2016-04-04"
  '(hl-paren-colors '("#ecf0f1" "#ecf0f1" "#c0392b"))
  '(pdf-view-midnight-colors '("#fdf4c1" . "#32302f"))
  '(safe-local-variable-values
-   '((checkdoc-package-keywords-flag)
+   '((Author . Siddharth-Bhat)
+     (checkdoc-package-keywords-flag)
      (thoth-ignored-folders "~/work/lz/.git" "~/work/lz/.idea" "~/work/lz/.vscode")
      (thoth-folders "~/work/lz/")
      (thoth-project-name . "lizzy")
      (thoth-folders ".")
      (thoth-folders list ".")
      (thoth-folders quote
-            ("."))
+		    ("."))
      (thoth-project-name . lizzy)))
  '(sml/active-background-color "#34495e")
  '(sml/active-foreground-color "#ecf0f1")
