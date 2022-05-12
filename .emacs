@@ -48,36 +48,35 @@
  ;; If there is more than one, they won't work right.
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "slate gray"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "goldenrod"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "olive"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
 
 
 
 ;; SLY
-(straight-use-package 'sly)
-(defun sly-add-keys ()
-    (local-set-key (kbd "C-p") sly-selector-map))
-(add-hook 'sly-mode-hook 'sly-add-keys)
-(add-hook 'sly-mode-hook
-      (lambda ()
-          (local-set-key (kbd "C-x C-k") 'sly-compile-file)
-          (local-set-key (kbd "C-x k") 'sly-compile-file)))
-(add-hook 'sly-mode-hook
-          (lambda ()
-            (unless (sly-connected-p)
-              (save-excursion (sly)))))
+(straight-use-package 'slime)
+;; (straight-use-package 'sly)
+;; (defun sly-add-keys ()
+;;     (local-set-key (kbd "C-p") sly-selector-map))
+;; (add-hook 'sly-mode-hook 'sly-add-keys)
+;; (add-hook 'sly-mode-hook
+;;       (lambda ()
+;;           (local-set-key (kbd "C-x C-k") 'sly-compile-file)
+;;           (local-set-key (kbd "C-x k") 'sly-compile-file)))
+;; (add-hook 'sly-mode-hook
+;;           (lambda ()
+;;             (unless (sly-connected-p)
+;;               (save-excursion (sly)))))
 (setq inferior-lisp-program "sbcl")
-
-
-(add-hook 'lisp-mode-hook (lambda ()
-                           (progn (rainbow-delimiters-mode))))
-
-(add-hook 'elisp-mode-hook (lambda ()
-                           (progn (rainbow-delimiters-mode))))
+(setq slime-load-failed-fasl nil)
+(add-hook 'lisp-mode-hook
+	  (lambda () (lispy-mode) (rainbow-delimiters-mode)))
+(add-hook 'elisp-mode-hook
+	  (lambda () (lispy-mode) (rainbow-delimiters-mode)))
 
 ;; HELP (BROKEN ON PURPOSE
 (straight-use-package 'helpful)
@@ -85,7 +84,7 @@
 ;; and macros. `helpful-function' is functions only, so we provide
 ;; `helpful-callable' as a drop-in replacement.
 (global-set-key (kbd "C-h f") #'helpful-callable)
-(global-set-key (kbd "C-h m") #'helpful-mode)
+(global-set-key (kbd "C-h m") #'describe-mode)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 ;; Lookup the current symbol at point. C-c C-d is a common keybinding
@@ -125,7 +124,6 @@
 (straight-use-package 'dash)
 (straight-use-package 'flycheck)
 (straight-use-package 's)
-(straight-use-package 'dash)
 
 
 ;; TODO: write a new shell for yourself using comint-mode
@@ -170,8 +168,8 @@
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<") ;; (kbd "C-+")
-
 )
+
 
 ;; (straight-use-package 'vertico)
 ;; Enable vertico
@@ -194,7 +192,25 @@
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
+(straight-use-package 'orderless)
+;; Optionally use the `orderless' completion style.
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
 
+;; Use `consult-completion-in-region' if Vertico is enabled.
+;; Otherwise use the default `completion--in-region' function.
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -222,6 +238,8 @@
 (straight-use-package 'ripgrep)
 (straight-use-package 'company-mode)
 (global-company-mode)
+(global-set-key (kbd "<tab>") #'company-complete-common-or-cycle)
+(setq company-format-margin-function nil)
 
 (straight-use-package 'magit)
 (straight-use-package 'which-key)
@@ -239,6 +257,15 @@
 (straight-use-package 'tuareg)
 (straight-use-package 'vterm)
 
+;; make all [vim splits/emacs windows] become real [i3 windows/emacs frames]
+(straight-use-package 'frame-mode)
+(use-package frame-mode
+  :demand t
+  :config
+  (progn
+    (frame-mode +1)
+    (frame-keys-mode +1)))
+
 (global-set-key (kbd "C-c C-c") 'vterm)
 
 ;; clang-format
@@ -251,14 +278,15 @@
 ;; (load-file "/home/bollu/.cabal/store/ghc-9.0.1/Agda-2.6.2-e4d39c2fc71c7d3a88b69b0a8dc1d4f53f9585135d37d2c8bf5962dd4ed1182c/share/emacs-mode/agda2.el")
 
 ;; LEAN4
-(setq load-path (cons "/home/siddu_druid/work/lean4-mode" load-path))
+(setq load-path (cons "/home/bollu/software/lean-mode/" load-path))
+(setq lean-rootdir "/home/bollu/work/oss/lean4/build/stage1")
 (straight-use-package 'dash)
 (straight-use-package 'flycheck)
 (straight-use-package 'f)
 (straight-use-package 'lsp-mode)
 (straight-use-package 'magit-section)
 (straight-use-package 's)
-(require 'lean4-mode)
+(require 'lean-mode)
 
 ;; OCAML
 (require 'tuareg)
@@ -291,7 +319,8 @@
 
 ;; (load-theme 'almost-mono-white t)
 ;; (load-theme 'borland-blue t)
-(load-theme 'wombat t)
+;; (load-theme 'wombat t)
+(load-theme 'leuven t)
 
 
 (vertico-mode +1)
@@ -348,25 +377,24 @@
 
 (setq vc-follow-symlinks t)
 
-(set-face-attribute 'default nil
-                    :family "Mx437 Nix8810 M15"
-                    :height 100
-                    :weight 'normal)
+;; (set-face-attribute 'default nil
+;;                     :family "Mx437 Nix8810 M15"
+;;                     :height 100
+;;                     :weight 'normal)
 
+;; (set-face-attribute 'default nil
+;;                     :family "Meslo LG S DZ for Powerline"
+;;                     :height 130
+;;                     :weight 'normal
+;;                     :width  'normal)
 
+;; (set-face-attribute 'default nil
+;;                     :family "mononoki"
+;;                     :height 110
+;;                     :weight 'normal
+;;                     :width  'normal)
 
-(set-face-attribute 'default nil
-                    :family "mononoki"
-                    :height 130
-                    :weight 'bold
-                    :width  'normal)
-
-(set-face-attribute 'default nil
-                    :family "Meslo LG S DZ for Powerline"
-                    :height 130
-                    :weight 'normal
-                    :width  'normal)
-
+(set-frame-font "Inconsolata 10" nil t)
 
 (global-set-key (kbd "<C-tab>") 'switch-to-buffer)
 (global-set-key (kbd "<C-iso-lefttab>") 'switch-to-buffer)
@@ -396,7 +424,7 @@
 ;;   (output-pdf "Okular")
 ;;   (output-html "xdg-open"))
 
-(setq lean-rootdir "/home/bollu/work/lean4/build/stage1")
+
 (global-unset-key (kbd "C-v"))
 (global-unset-key (kbd "C-x p"))
 (global-unset-key (kbd "C-x C-p"))
@@ -409,6 +437,7 @@
 (global-set-key (kbd "C-c C-;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c /") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c C-/") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 
 
 (global-auto-revert-mode t) ;; auto load changed buffers on disk that don't have local unsaved data
@@ -649,9 +678,10 @@ Version 2016-04-04"
 ;; (defun thoth-on () (thoth-mode 1))
 
 
-
+(straight-use-package 'selectrum)
 ;; selectrum-select-current-candidate (found in selectrum-minibuffer-map)
-;; (define-key selectrum-minibuffer-map (kbd "<RET>") 'selectrum-select-current-candidate) 
+(define-key selectrum-minibuffer-map (kbd "<RET>") 'selectrum-select-current-candidate) 
+
 
 (defun mechanics ()
   (interactive)
