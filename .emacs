@@ -17,7 +17,13 @@
 
 (straight-use-package 'exec-path-from-shell)
 (exec-path-from-shell-copy-env "PATH")
-(defalias 'ff 'find-file) ;; nice for use within eshell
+(defalias 'ff 'find-file) ;; nice for use within
+
+
+(global-unset-key (kbd "<left>"))
+(global-unset-key (kbd "<right>"))
+(global-unset-key (kbd "<up>"))
+(global-unset-key (kbd "<down>"))
 
 (straight-use-package 'use-package)
 
@@ -74,8 +80,9 @@
 (setq inferior-lisp-program "sbcl")
 (setq slime-load-failed-fasl nil)
 (add-hook 'lisp-mode-hook
-	  (lambda () (lispy-mode) (rainbow-delimiters-mode)))
-(add-hook 'elisp-mode-hook
+	  (lambda () (lispy-mode)
+	    (rainbow-delimiters-mode)))
+(add-hook 'emacs-lisp-mode-hook
 	  (lambda () (lispy-mode) (rainbow-delimiters-mode)))
 
 ;; HELP (BROKEN ON PURPOSE
@@ -680,7 +687,7 @@ Version 2016-04-04"
 
 (straight-use-package 'selectrum)
 ;; selectrum-select-current-candidate (found in selectrum-minibuffer-map)
-(define-key selectrum-minibuffer-map (kbd "<RET>") 'selectrum-select-current-candidate) 
+;; (define-key selectrum-minibuffer-map (kbd "<RET>") 'selectrum-select-current-candidate) 
 
 
 (defun mechanics ()
