@@ -15,6 +15,72 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+
+
+
+;; unbind EVERYTHING ===
+;; unbind EVERYTHING ===
+;; unbind EVERYTHING ===
+;; https://emacs.stackexchange.com/questions/3870/how-to-truly-unbind-all-global-keybinds
+;; (use-global-map (make-sparse-keymap))
+;; (global-set-key [t] #'self-insert-command)
+;; (let ((c ?\s))
+;;   (while (< c ?\d)
+;;     (global-set-key (vector c) #'self-insert-command)
+;;     (setq c (1+ c)))
+;;   (when (eq system-type 'ms-dos)
+;;     (setq c 128)
+;;     (while (< c 160)
+;;       (global-set-key (vector c) #'self-insert-command)
+;;       (setq c (1+ c))))
+;;   (setq c 160)
+;;   (while (< c 256)
+;;     (global-set-key (vector c) #'self-insert-command)
+;;     (setq c (1+ c))))
+;; 
+;; (global-set-key [deletechar] #'backward-delete-char-untabify)
+;; (global-set-key (kbd "<backspace>") #'backward-delete-char-untabify)
+;; (global-set-key (kbd "M-x") #'execute-extended-command)
+;; (global-set-key (kbd "C-x o") #'other-window)
+;; (global-set-key (kbd "C-x 0") #'delete-window)
+;; (global-set-key (kbd "C-x 1") #'delete-other-windows)
+;; (global-set-key (kbd "C-x 2") #'split-window-below)
+;; (global-set-key (kbd "C-x 3") #'split-window-right)
+;; (global-set-key (kbd "C-x C-c") #'save-buffers-kill-terminal)
+;; (global-set-key (kbd "C-x C-f") #'find-file)
+;; (global-set-key (kbd "C-x C-s") #'save-buffer)
+;; (global-set-key (kbd "C-g") #'keyboard-quit)
+;; (global-set-key (kbd "<up>") #'previous-line)
+;; (global-set-key (kbd "<down>") #'next-line)
+;; (global-set-key (kbd "<left>") #'left-char)
+;; (global-set-key (kbd "<right>") #'right-char)
+;; (global-set-key (kbd "<return>") #'newline)
+;; (global-set-key (kbd "<tab>") #'forward-button)
+;; (global-set-key (kbd "C-a") #'move-beginning-of-line)
+;; (global-set-key (kbd "C-e") #'move-end-of-line)
+;; (global-set-key (kbd "C-k") #'kill-line)
+;; (global-set-key (kbd "C-b") #'switch-buffer)
+;; 
+;; ;; go back/forward
+;; (straight-use-package 'back-button)
+;; (back-button-mode 1)
+;; (global-set-key (kbd "C-<") #'back-button-global-backward)
+;; (global-set-key (kbd "C->") #'back-button-global-forward)
+;; (global-set-key (kbd "C-x <") #'back-button-global-backward)
+;; (global-set-key (kbd "C-x C-<") #'back-button-global-backward)
+;; (global-set-key (kbd "C-x >") #'back-button-global-forward)
+;; (global-set-key (kbd "C-x >") #'back-button-global-forward)
+;; (global-set-key (kbd "C-x C->") #'back-button-global-forward)
+;; 
+;; 
+;; (define-key minibuffer-local-map (kbd "<tab>") #'minibuffer-complete)
+;; (define-key minibuffer-local-map (kbd "<return>") #'exit-minibuffer)
+;; ;; (define-key minibuffer-local-map (kbd "<return>") #'minibuffer-complete-and-exit)
+;; (define-key minibuffer-local-map (kbd "C-j") #'minibuffer-complete-and-exit)
+;; (define-key minibuffer-local-map (kbd "C-g") #'abort-recursive-edit)
+
+;; ^^^^^
+
 (straight-use-package 'exec-path-from-shell)
 (exec-path-from-shell-copy-env "PATH")
 (defalias 'ff 'find-file) ;; nice for use within
@@ -65,18 +131,6 @@
 
 ;; SLY
 (straight-use-package 'slime)
-;; (straight-use-package 'sly)
-;; (defun sly-add-keys ()
-;;     (local-set-key (kbd "C-p") sly-selector-map))
-;; (add-hook 'sly-mode-hook 'sly-add-keys)
-;; (add-hook 'sly-mode-hook
-;;       (lambda ()
-;;           (local-set-key (kbd "C-x C-k") 'sly-compile-file)
-;;           (local-set-key (kbd "C-x k") 'sly-compile-file)))
-;; (add-hook 'sly-mode-hook
-;;           (lambda ()
-;;             (unless (sly-connected-p)
-;;               (save-excursion (sly)))))
 (setq inferior-lisp-program "sbcl")
 (setq slime-load-failed-fasl nil)
 (add-hook 'lisp-mode-hook
@@ -285,8 +339,8 @@
 ;; (load-file "/home/bollu/.cabal/store/ghc-9.0.1/Agda-2.6.2-e4d39c2fc71c7d3a88b69b0a8dc1d4f53f9585135d37d2c8bf5962dd4ed1182c/share/emacs-mode/agda2.el")
 
 ;; LEAN4
-(setq load-path (cons "/home/bollu/software/lean-mode/" load-path))
-(setq lean-rootdir "/home/bollu/work/oss/lean4/build/stage1")
+(setq load-path (cons "/home/bollu/work/lean4-mode" load-path))
+(setq lean-rootdir "/home/bollu/work/lean4/build/stage1")
 (straight-use-package 'dash)
 (straight-use-package 'flycheck)
 (straight-use-package 'f)

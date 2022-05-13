@@ -19,9 +19,16 @@ vim.cmd [[
   augroup end
 ]]
 
+vim.cmd [[
+set tabstop=4
+set shiftwidth=4
+set expandtab 
+]]
+
 require('packer').startup(function(use)
   use 'phaazon/hop.nvim'
   use 'rhysd/vim-clang-format'
+  use 'kovisoft/slimv'
   use 'wbthomason/packer.nvim' -- Package manager
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -50,7 +57,11 @@ require('packer').startup(function(use)
   use 'ojroques/vim-oscyank' -- yank through SSH
   use 'nanotech/jellybeans.vim'
   use 'liuchengxu/vista.vim'
+  use 'NLKNguyen/papercolor-theme'
 end)
+
+-- slimv
+vim.cmd [[ let g:lisp_rainbow = 1 ]]
 
 --Set highlight on search
 vim.o.hlsearch = false
@@ -77,7 +88,7 @@ vim.wo.signcolumn = 'yes'
 
 --Set colorscheme
 vim.o.termguicolors = true
-vim.cmd [[colorscheme eldar]]
+vim.cmd [[colorscheme PaperColor]]
 vim.o.clipboard = 'unnamedplus'
 -- let g:oscyank_max_length = 9999999999
 -- vnoremap <leader>c :OSCYank<CR> -- yanking 
@@ -107,6 +118,7 @@ require('lean').setup{
 
 --Enable Comment.nvim
 require('Comment').setup()
+
 
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
