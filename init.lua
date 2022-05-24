@@ -5,6 +5,13 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
 
+
+vim.cmd [[
+  set expandtab
+  set tabstop=4
+  set shiftwidth=4
+]]
+
 vim.cmd [[
   augroup Packer
     autocmd!
@@ -13,6 +20,8 @@ vim.cmd [[
 ]]
 
 require('packer').startup(function(use)
+  use 'phaazon/hop.nvim'
+  use 'rhysd/vim-clang-format'
   use 'wbthomason/packer.nvim' -- Package manager
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
@@ -40,6 +49,7 @@ require('packer').startup(function(use)
   use 'agude/vim-eldar'
   use 'ojroques/vim-oscyank' -- yank through SSH
   use 'nanotech/jellybeans.vim'
+  use 'liuchengxu/vista.vim'
 end)
 
 --Set highlight on search
@@ -85,6 +95,14 @@ require('lualine').setup {
     component_separators = '|',
     section_separators = '',
   },
+}
+
+-- lean
+require('lean').setup{
+  abbreviations = { builtin = true },
+  lsp = { on_attach = on_attach },
+  lsp3 = { on_attach = on_attach },
+  mappings = true,
 }
 
 --Enable Comment.nvim
@@ -328,3 +346,16 @@ cmp.setup {
 }
 -- vim: ts=2 sts=2 sw=2 et
 
+-- Hop mappings
+require('hop').setup()
+-- vim.api.nvim_set_keymap('n', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+-- vim.api.nvim_set_keymap('n', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+-- vim.api.nvim_set_keymap('o', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true, inclusive_jump = true })<cr>", {})
+-- vim.api.nvim_set_keymap('o', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true, inclusive_jump = true })<cr>", {})
+-- vim.api.nvim_set_keymap('', 't', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+-- vim.api.nvim_set_keymap('', 'T', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+-- vim.api.nvim_set_keymap('n', '<C-/>', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.END })<cr>", {})
+vim.api.nvim_set_keymap('n', '<C- >', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.END })<cr>", {})
+-- vim.api.nvim_set_keymap('n', '<leader>e', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.END })<cr>", {})
+-- vim.api.nvim_set_keymap('v', '<leader>e', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.END })<cr>", {})
+-- vim.api.nvim_set_keymap('o', '<leader>e', "<cmd> lua require'hop'.hint_words({ hint_position = require'hop.hint'.HintPosition.END, inclusive_jump = true })<cr>", {})
