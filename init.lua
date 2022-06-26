@@ -26,6 +26,7 @@ set expandtab
 ]]
 
 require('packer').startup(function(use)
+  use 'ii14/lsp-command' -- LSP commands via :Lsp
   use 'phaazon/hop.nvim'
   use 'rhysd/vim-clang-format'
   use 'kovisoft/slimv'
