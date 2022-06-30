@@ -23,6 +23,7 @@ vim.cmd [[
 set tabstop=4
 set shiftwidth=4
 set expandtab 
+set virtualedit=all
 ]]
 
 require('packer').startup(function(use)
