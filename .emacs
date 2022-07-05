@@ -15,7 +15,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
+(setq visible-bell 't)
+(straight-use-package 'package-lint)
 
 ;; unbind EVERYTHING ===
 ;; unbind EVERYTHING ===
@@ -76,9 +77,24 @@
 ;; (define-key minibuffer-local-map (kbd "<return>") #'exit-minibuffer)
 ;; ;; (define-key minibuffer-local-map (kbd "<return>") #'minibuffer-complete-and-exit)
 ;; (define-key minibuffer-local-map (kbd "C-j") #'minibuffer-complete-and-exit)
-;; (define-key minibuffer-local-map (kbd "C-g") #'abort-recursive-edit)
+;; (define- -local-map (kbd "C-g") #'abort-recursive-edit)
 
 ;; ^^^^^
+
+
+(defun bollu/backward-kill-word ()
+  "Remove all whitespace if the
+   character behind the cursor is whitespace, otherwise remove a word."
+  (interactive)
+  (if (looking-back "[ \n]")
+      ;; delete horizontal space before us and then check to see if we
+      ;; are looking at a newline
+      (progn (delete-horizontal-space 't)
+             (while (looking-back "[ \n]")
+               (backward-delete-char 1)))
+    ;; otherwise, just do the normal kill word.
+    (backward-kill-word 1)))
+(global-set-key (kbd "C-<backspace>") 'bollu/backward-kill-word)
 
 (straight-use-package 'exec-path-from-shell)
 (exec-path-from-shell-copy-env "PATH")
@@ -198,7 +214,7 @@
 (require 'lean4-mode)
 
 
-(load-theme 'wheatgrass t)
+(load-theme 'wombat t)
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
 (setq projectile-system 'default)
@@ -262,6 +278,7 @@
 (global-unset-key (kbd "C-x p"))
 (global-unset-key (kbd "C-x C-p"))
 
+
 ;; goto-line
 (global-set-key (kbd "C-c :") 'goto-line)
 (global-set-key (kbd "C-x :") 'goto-line)
@@ -281,13 +298,18 @@
 (straight-use-package 'vertico)
 (vertico-mode 1)
 (setq enable-recursive-minibuffers t)
-(straight-use-package 'corfu)
+
 ;; corfu: better company, overwrite completion-at-point
+(straight-use-package 'corfu)
 (corfu-mode)
+
+;;  TODO: find a way to make corfu use basic, but
+;;  everyone else use orderless?
 (setq corfu-auto t
-            corfu-auto-delay 0
-            corfu-auto-prefix 0
-            completion-styles '(basic))
+      corfu-auto-delay 0
+      corfu-auto-prefix 0
+      completion-styles '(orderless basic))
+(global-corfu-mode)
 (global-set-key (kbd "C-\\") 'completion-at-point)
 
 (straight-use-package 'swiper)
@@ -307,9 +329,13 @@
 (global-set-key (kbd "C-c C-a") 'mark-whole-buffer)
 
 (setq show-paren-delay 0)
+(setq show-paren-style 'expression)
 (show-paren-mode 1) ;; matching parens highlight
 
 (global-set-key (kbd "C-c g") 'magit) ;; magit: C-c g
+
+(straight-use-package 'vterm)
+(global-set-key (kbd "C-c C-c") 'vterm)
 
 ;; emacs temp files
 ;; store all backup and autosave files in the tmp dir
