@@ -28,12 +28,25 @@
 (define-key evil-insert-state-map (kbd "C-n") `evil-next-line)
 (define-key evil-normal-state-map (kbd "C-p") `evil-previous-line)
 (define-key evil-normal-state-map (kbd "C-n") `evil-next-line)
-: judge if I even want evil-escape
+;; Judge if I even want evil-escape
 (straight-use-package 'evil-escape)
 (setq-default evil-escape-key-sequence "jk")
 (evil-escape-mode 't)
 (straight-use-package 'evil-collection)
-(evil-collection-init '(magit corfu consult vertico dired slime smerge vterm rg ripgrep grep))
+(evil-collection-init
+ '(magit
+   apropos
+   corfu
+   consult
+   vertico
+   dired
+   slime
+   smerge
+   elisp-mode
+   vterm
+   rg
+   ripgrep
+   grep))
 
 
 ;; TODO: implement custom multiple cursors.
