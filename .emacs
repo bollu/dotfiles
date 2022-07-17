@@ -26,21 +26,33 @@
 (define-key evil-insert-state-map (kbd "C-c") `evil-force-normal-state)
 ;; (define-key evil-insert-state-map (kbd "C-p") `evil-previous-line)
 ;; (define-key evil-insert-state-map (kbd "C-n") `evil-next-line)
-(define-key evil-normal-state-map (kbd "C-j") `evil-next-line)
-(define-key evil-normal-state-map (kbd "C-k") `evil-previous-line)
-(define-key evil-normal-state-map (kbd "C-p") `evil-previous-line)
-(define-key evil-normal-state-map (kbd "C-y") `evil-paste-after)
-(define-key evil-normal-state-map (kbd "C-f") `evil-forward-word-begin)
-(define-key evil-normal-state-map (kbd "C-y") `evil-backward-word-begin)
-(define-key evil-normal-state-map (kbd "C-n") `evil-next-line)
-(define-key evil-normal-state-map (kbd "C-e") `evil-end-of-line)
+
+(defun bollu/setup-emacs-keybinds-for-state-map (smap) 
+  (define-key smap (kbd "C-j") `evil-next-line)
+  (define-key smap (kbd "C-k") `evil-previous-line)
+  (define-key smap (kbd "C-p") `evil-previous-line)
+  (define-key smap (kbd "C-y") `evil-paste-after)
+  (define-key smap (kbd "C-f") `evil-forward-word-begin)
+  (define-key smap (kbd "C-b") `evil-backward-word-begin)
+  (define-key smap (kbd "C-n") `evil-next-line)
+  (define-key smap (kbd "C-e") `evil-end-of-line))
+
+(bollu/setup-emacs-keybinds-for-state-map evil-normal-state-map)
+(bollu/setup-emacs-keybinds-for-state-map evil-visual-state-map)
+					  
 
 (define-key evil-insert-state-map (kbd "C-a") `move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") `move-end-of-line)
 (define-key evil-insert-state-map (kbd "C-n") `next-line)
 (define-key evil-insert-state-map (kbd "C-p") `previous-line)
+(define-key evil-insert-state-map (kbd "C-k") `kill-line)
+(define-key evil-insert-state-map (kbd "C-SPC")
+  (lambda ()
+    (interactive)
+    (evil-force-normal-state)
+    (evil-visual-char)
+    ))
 
-(setq evil-emacs-state-cursor '("white" hollow)) 
 (setq evil-normal-state-cursor '("white" hollow)) 
 (setq evil-visual-state-cursor '("yellow" hollow))
 (setq evil-insert-state-cursor '("yellow" box))
@@ -68,6 +80,14 @@
    ripgrep
    grep))
 
+
+
+;; make the screen look dimmer on unfocused region
+;; This has janky interaction with corfu:
+;; https://github.com/gonewest818/dimmer.el/issues/62
+;; (straight-use-package 'dimmer)
+;; (dimmer-mode t)
+;; (dimmer-configure-which-key)
 
 ;; TODO: implement custom multiple cursors.
 ;; unbind EVERYTHING ===
