@@ -17,16 +17,23 @@
 (setq visible-bell 't)
 (straight-use-package 'package-lint)
 
+(setq evil-want-keybinding nil)
 (straight-use-package 'evil)
 (evil-mode 't)
 (setq evil-want-integration t)
 (setq evil-want-keybinding nil)
-(global-set-key (kbd "C-u") `evil-scroll-up)
+(define-key evil-normal-state-map (kbd "C-u") `evil-scroll-up)
+(define-key evil-insert-state-map (kbd "C-c") `evil-force-normal-state)
+(define-key evil-insert-state-map (kbd "C-p") `evil-previous-line)
+(define-key evil-insert-state-map (kbd "C-n") `evil-next-line)
+(define-key evil-normal-state-map (kbd "C-p") `evil-previous-line)
+(define-key evil-normal-state-map (kbd "C-n") `evil-next-line)
+: judge if I even want evil-escape
 (straight-use-package 'evil-escape)
 (setq-default evil-escape-key-sequence "jk")
 (evil-escape-mode 't)
 (straight-use-package 'evil-collection)
-(evil-collection-init 'magit)
+(evil-collection-init '(magit corfu consult vertico dired slime smerge vterm rg ripgrep grep))
 
 
 ;; TODO: implement custom multiple cursors.
@@ -294,8 +301,8 @@
 
 ;; goto-line
 (global-set-key (kbd "C-c :") 'goto-line)
-(global-set-key (kbd "C-x :") 'goto-line)
-(global-set-key (kbd "C-:") 'goto-line)
+;; (global-set-key (kbd "C-x :") 'goto-line)
+;; (global-set-key (kbd "C-:") 'goto-line)
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c C-;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c /") 'comment-or-uncomment-region)
@@ -348,7 +355,7 @@
 (global-set-key (kbd "C-c g") 'magit) ;; magit: C-c g
 
 (straight-use-package 'vterm)
-(global-set-key (kbd "C-c C-c") 'vterm)
+(global-set-key (kbd "C-c C-<return>") 'vterm)
 
 ;; emacs temp files
 ;; store all backup and autosave files in the tmp dir
