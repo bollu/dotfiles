@@ -24,10 +24,29 @@
 (setq evil-want-keybinding nil)
 (define-key evil-normal-state-map (kbd "C-u") `evil-scroll-up)
 (define-key evil-insert-state-map (kbd "C-c") `evil-force-normal-state)
-(define-key evil-insert-state-map (kbd "C-p") `evil-previous-line)
-(define-key evil-insert-state-map (kbd "C-n") `evil-next-line)
+;; (define-key evil-insert-state-map (kbd "C-p") `evil-previous-line)
+;; (define-key evil-insert-state-map (kbd "C-n") `evil-next-line)
+(define-key evil-normal-state-map (kbd "C-j") `evil-next-line)
+(define-key evil-normal-state-map (kbd "C-k") `evil-previous-line)
 (define-key evil-normal-state-map (kbd "C-p") `evil-previous-line)
+(define-key evil-normal-state-map (kbd "C-y") `evil-paste-after)
+(define-key evil-normal-state-map (kbd "C-f") `evil-forward-word-begin)
+(define-key evil-normal-state-map (kbd "C-y") `evil-backward-word-begin)
 (define-key evil-normal-state-map (kbd "C-n") `evil-next-line)
+(define-key evil-normal-state-map (kbd "C-e") `evil-end-of-line)
+
+(define-key evil-insert-state-map (kbd "C-a") `move-beginning-of-line)
+(define-key evil-insert-state-map (kbd "C-e") `move-end-of-line)
+(define-key evil-insert-state-map (kbd "C-n") `next-line)
+(define-key evil-insert-state-map (kbd "C-p") `previous-line)
+
+(setq evil-emacs-state-cursor '("white" hollow)) 
+(setq evil-normal-state-cursor '("white" hollow)) 
+(setq evil-visual-state-cursor '("yellow" hollow))
+(setq evil-insert-state-cursor '("yellow" box))
+(setq evil-replace-state-cursor '("white" hollow))
+(setq evil-operator-state-cursor '("white" hollow))
+
 ;; Judge if I even want evil-escape
 (straight-use-package 'evil-escape)
 (setq-default evil-escape-key-sequence "jk")
@@ -40,6 +59,7 @@
    consult
    vertico
    dired
+   occur ;; Used in `M-s o` when searching for all hits of a function.
    slime
    smerge
    elisp-mode
@@ -246,8 +266,9 @@
 (straight-use-package 's)
 (require 'lean4-mode)
 
-
-(load-theme 'wombat t)
+(straight-use-package 'cyberpunk-theme)
+;; (load-theme 'wombat t)
+; (load-theme 'cyberpunk t)
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
 (setq projectile-system 'default)
@@ -392,7 +413,6 @@
   (run-scheme  "mit-scheme --band /home/bollu/work/sicm/scmutils-20200810/mechanics.com --library /home/bollu/.local/lib/mit-scheme-x86-64/")
   (set-input-method 'TeX))
 
-
 ;; custom-set-variables was added by Custom.
 ;; If you edit it by hand, you could mess it up, so be careful.
 ;; Your init file should contain only one such instance.
@@ -402,4 +422,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("1b780020c8fe8c91829c06d2a9d5c7d8a182216e479c5b24e787fb1712ffb176" "e9d47d6d41e42a8313c81995a60b2af6588e9f01a1cf19ca42669a7ffd5c2fde" default))
  '(safe-local-variable-values '((eval turn-off-auto-fill))))
