@@ -1,6 +1,5 @@
+
 ;; eshell set paths
-
-
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -18,6 +17,19 @@
 (setq visible-bell 't)
 (straight-use-package 'package-lint)
 
+(straight-use-package 'evil)
+(evil-mode 't)
+(setq evil-want-integration t)
+(setq evil-want-keybinding nil)
+(global-set-key (kbd "C-u") `evil-scroll-up)
+(straight-use-package 'evil-escape)
+(setq-default evil-escape-key-sequence "jk")
+(evil-escape-mode 't)
+(straight-use-package 'evil-collection)
+(evil-collection-init 'magit)
+
+
+;; TODO: implement custom multiple cursors.
 ;; unbind EVERYTHING ===
 ;; unbind EVERYTHING ===
 ;; unbind EVERYTHING ===
@@ -77,7 +89,7 @@
 ;; (define-key minibuffer-local-map (kbd "<return>") #'exit-minibuffer)
 ;; ;; (define-key minibuffer-local-map (kbd "<return>") #'minibuffer-complete-and-exit)
 ;; (define-key minibuffer-local-map (kbd "C-j") #'minibuffer-complete-and-exit)
-;; (define- -local-map (kbd "C-g") #'abort-recursive-edit)
+;; (define-key minibuffer-local-map (kbd "C-g") #'abort-recursive-edit)
 
 ;; ^^^^^
 
@@ -149,14 +161,15 @@
 (setq inferior-lisp-program "sbcl")
 (setq slime-load-failed-fasl nil)
 (add-hook 'lisp-mode-hook
-	  (lambda () (lispy-mode)
+	  (lambda () ;; (lispy-mode)
 	    (rainbow-delimiters-mode)))
 (add-hook 'emacs-lisp-mode-hook
-	  (lambda () (lispy-mode) (rainbow-delimiters-mode)))
+	  (lambda () ;; (lispy-mode)
+	    (rainbow-delimiters-mode)))
 
 
 ;; LISPY
-(straight-use-package 'lispy)
+;; (straight-use-package 'lispy)
 (straight-use-package 'paredit)
 
 ;; ELISP MODE
