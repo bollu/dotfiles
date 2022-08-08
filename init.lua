@@ -28,6 +28,7 @@ set virtualedit=all
 
 require('packer').startup(function(use)
   use 'ii14/lsp-command' -- LSP commands via :Lsp
+  use 'rhysd/vim-grammarous'
   use 'phaazon/hop.nvim'
   use 'rhysd/vim-clang-format'
   use 'kovisoft/slimv'
@@ -60,6 +61,7 @@ require('packer').startup(function(use)
   use 'nanotech/jellybeans.vim'
   use 'liuchengxu/vista.vim'
   use 'NLKNguyen/papercolor-theme'
+  use 'tpope/vim-unimpaired'
 end)
 
 -- slimv
@@ -178,7 +180,7 @@ vim.api.nvim_set_keymap('n', '<C-j>', [[<cmd>:bprevious<CR>]], { noremap = true,
 vim.api.nvim_set_keymap('n', '<C-k>', [[<cmd>:bnext<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-b>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sb', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>]], { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-p>', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
+--vim.api.nvim_set_keymap('n', '<C-p>', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
