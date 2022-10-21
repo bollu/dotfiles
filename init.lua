@@ -26,7 +26,17 @@ set expandtab
 set virtualedit=all
 ]]
 
+
+vim.cmd[[
+augroup filetype_yaml
+  autocmd!
+  autocmd BufEnter *.yaml,*.yml
+  \ setlocal indentkeys-=0#
+augroup END
+]]
+
 require('packer').startup(function(use)
+  use 'github/copilot.vim'
   use 'ii14/lsp-command' -- LSP commands via :Lsp
   use 'rhysd/vim-grammarous'
   use 'phaazon/hop.nvim'
@@ -61,14 +71,16 @@ require('packer').startup(function(use)
   use 'nanotech/jellybeans.vim'
   use 'liuchengxu/vista.vim'
   use 'NLKNguyen/papercolor-theme'
+  use 'tanvirtin/monokai.nvim'
   use 'tpope/vim-unimpaired'
+  use 'LnL7/vim-nix'
 end)
 
 -- slimv
 vim.cmd [[ let g:lisp_rainbow = 1 ]]
 
 --Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 --Make line numbers default
 vim.wo.number = true
@@ -92,7 +104,7 @@ vim.wo.signcolumn = 'yes'
 
 --Set colorscheme
 vim.o.termguicolors = true
-vim.cmd [[colorscheme PaperColor]]
+vim.cmd [[colorscheme monokai]]
 vim.o.clipboard = 'unnamedplus'
 -- let g:oscyank_max_length = 9999999999
 -- vnoremap <leader>c :OSCYank<CR> -- yanking 
