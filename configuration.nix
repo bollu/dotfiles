@@ -31,11 +31,12 @@
 
   # virtualisation.docker.enable = true;
   programs.mosh = { enable = true; };
-   environment.systemPackages = with pkgs; [ neovim git tmux emacs-nox 
-   cowsay fzf sbcl
-   wget aria2 nix-tree exa fd procs sd dust ripgrep bottom
-   delta stack ghc
-     ];
+  environment.systemPackages = with pkgs; [ neovim git tmux emacs-nox 
+     cowsay fzf sbcl
+     wget aria2 nix-tree exa fd procs sd dust ripgrep bottom
+     delta stack ncdu wireguard-tools
+     php fcgi php81Extensions.mbstring php81Extensions.intl php81Extensions.mysqlnd
+  ];
 	security.acme = {
 		acceptTerms = true;
 		email = "siddu.druid@gmail.com";
@@ -44,10 +45,52 @@
         # 8096, 8920 = jellyfin
         # 4200 = shellinabox
         # 8000 = quick python debugging.
-	networking.firewall.allowedTCPPorts = [ 80 443 8096 8920 4200 8000];
-        networking.firewall.allowedUDPPorts = [ 1900 7359 4200 8000];
+	networking.firewall.allowedTCPPorts = [ 80 443 8096 8920 4200 8000 9999];
+        networking.firewall.allowedUDPPorts = [ 1900 7359 4200 8000 9999];
+        services.mysql = {
+          enable = true;
+          package = pkgs.mariadb;
+          ensureUsers = [
+            {
+              name = "icfp24";
+              ensurePermissions = {
+                "ICFP24.*" = "ALL PRIVILEGES";
+              };
+            }
+          ];
+        };
+        # pool for icfp24
+        services.phpfpm.phpOptions = ''
+          display_errors = on;
+          log_errors = on;
+        '';
+        users.users.icfp24 = {
+          isSystemUser = true;
+          createHome = true;
+          home = "/var/icfp24/";
+          group  = "icfp24";
+        };
+        users.groups.icfp24 = {};
 
-	services.thelounge.enable = true;
+        services.phpfpm.pools.icfp24 = {
+          user = "icfp24";
+          group = "icfp24";
+          # listen = "9999";
+          # phpPackage = pkgs.php;
+          settings = {
+            pm = "dynamic";            
+            "listen.owner" = config.services.nginx.user;
+            "pm.max_children" = 5;
+            "pm.start_servers" = 2;
+            "pm.min_spare_servers" = 1;
+            "pm.max_spare_servers" = 3;
+            "pm.max_requests" = 500;
+          };
+        };
+        services.thelounge = {
+            port = 6789;
+            enable = true;
+        };
 	services.nginx = {
                 enable = true;
                 enableReload = true;
@@ -58,15 +101,43 @@
 
                 virtualHosts = {
                         "pixel-druid.com" = { 
-				locations."/".root = "/var/blog";
+				locations."/".root = "/var/blog/out";
 				addSSL = true;
 				enableACME = true;
+			};
+			"icfp24.pixel-druid.com" = {
+                              root = "/var/icfp24/";
+                              # extraConfig = ''
+                              #     try_files $uri $uri/ /index.php?url=$uri&$args;
+                              # '';
+                              locations."/" = {
+                                root = "/var/icfp24/";
+                                extraConfig = ''
+                                    try_files $uri $uri/ /index.php?$args;
+                                    rewrite ^ /index.php;
+                                '';
+                              };
+                              locations."~ \\.php$" = {
+                                # https://nixos.wiki/wiki/Phpfpm
+                                extraConfig = ''
+                                  fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                                  fastcgi_pass  unix:${config.services.phpfpm.pools.icfp24.socket};
+                                  fastcgi_index index.php;
+                                  include ${pkgs.nginx}/conf/fastcgi_params;
+                                  include ${pkgs.nginx}/conf/fastcgi.conf;
+                                '';
+                              };
+                              addSSL = true;
+                              enableACME = true;
 			};
 			"irc.pixel-druid.com" = {
 				locations."/".proxyPass = "http://127.0.0.1:" + (builtins.toString config.services.thelounge.port);
 				addSSL = true;
 				enableACME = true;
 			};
+                        # Username jellyfin, no password (leave password field blank)
+                        # jellyfin config folder: /var/lib/jellyfin
+                        # jellyfin data folder: 
 			"jellyfin.pixel-druid.com" = {
 				locations."/".proxyPass = "http://127.0.0.1:8096";
 				enableACME = true;
@@ -83,6 +154,20 @@
   services.jellyfin.enable = true;
   services.jellyfin.openFirewall = true;
   services.shellinabox.enable = true;
+
+  systemd.services.rclone = {
+    description = "service to run the rclone mount for premiumize";
+    wantedBy = ["multi-user.target"];
+    path = [ pkgs.rclone ];
+    script = ''
+    rclone --allow-other --dir-perms=0777 --file-perms=0555 --config /root/.config/rclone/rclone.conf mount premiumize: /root/Movies/premiumize
+    '';
+    serviceConfig = {
+      type = "simple";
+      Restart = "on-failure";
+    };
+  };
+  
   # services.openvpn.servers = { vpn = { config = ''/root/openvpn/vpn.conf''; };
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.0.2u"
